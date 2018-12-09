@@ -19,6 +19,15 @@ int netclose(int fd);
 #define NETREAD 2
 #define NETWRITE 3
 #define NETCLOSE 4
+#define NETCREATE 5
+#define NETFLUSH 6
+#define NETRELEASE 7
+#define NETTRUNCATE 8
+#define NETGETATTR 9
+#define NETOPENDIR 10
+#define NETREADDIR 11
+#define NETRELEASEDIR 12
+#define NETMKDIR 13
 
 typedef struct packet
 {  

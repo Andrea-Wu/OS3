@@ -12,8 +12,11 @@
 #include <netinet/in.h>
 #include "libnetfiles.h"
 
+////////////TO BE REMOVED/////////
 //this is to make sure if netserverinit() was called if it wasnt none of the other codes should work!
 int netInitServerFlag=0;
+////////////TO BE REMOVED/////////
+
 struct addrinfo clientSideData;
 struct addrinfo *serverSideData;
 char ipAddressArray[INET_ADDRSTRLEN];
@@ -101,12 +104,15 @@ int handleNetOpenRequests(int socketDescriptor,const char* pathname,int flags)
 //sends path name and read write flags to the server to be evaluated
 int netopen(const char *pathname, int flags)
 {
+////////////TO BE REMOVED/////////
 	//Make sure that netInitServer is called first before any operation is requested such as NetOpen,NetRead,NetWrite, and NetClose
     	if(netInitServerFlag==0)
 	{
         	fprintf(stderr, "NetOpen request was called before netserverinit()!\n");
         	exit(-1);
     	}
+////////////TO BE REMOVED/////////
+
     	int sockDescriptor=-1;
 	//estbalish a connection for the following socket descriptor
     	sockDescriptor=connectionForClientRequests(sockDescriptor);
@@ -122,11 +128,14 @@ int netopen(const char *pathname, int flags)
 //in this method we have a buffer and the required bytes we want to read from the opened file
 ssize_t netread(int filedes, void *buf, size_t nbyte)
 {
+////////////TO BE REMOVED/////////
     	if(netInitServerFlag==0)
 	{
         	fprintf(stderr, "NetRead request was called before netserverinit()!\n");
         	exit(-1);
     	}
+////////////TO BE REMOVED/////////
+
 	int sockDescriptor=-1;
 	//Establish a connection for the NetRead requested
     	sockDescriptor=connectionForClientRequests(sockDescriptor);
@@ -203,12 +212,15 @@ ssize_t netread(int filedes, void *buf, size_t nbyte)
 //in this method we have a buffer and the required bytes we want to write from the opened file
 ssize_t netwrite(int filedes,const void *buf,size_t nbyte)
 {
+////////////TO BE REMOVED/////////
 	//check the whether or not netserverInit was called, this must be called befre a netopen,netread,netwrite,netclose is abl to perform
     	if(netInitServerFlag==0)
 	{
         	fprintf(stderr, "NetWrite request called before netserverinit()\n");
         	exit(-1);
     	}
+////////////TO BE REMOVED/////////
+
     	int socketDescriptor=-1;
 	//establish a connection for the NetWrite Requst
     	socketDescriptor=connectionForClientRequests(socketDescriptor);
@@ -273,11 +285,14 @@ ssize_t netwrite(int filedes,const void *buf,size_t nbyte)
 int netclose(int fd)
 {
 	
+////////////TO BE REMOVED/////////
 	if(netInitServerFlag==0)
 	{
         	fprintf(stderr, "NetClose request called before netserverinit()\n");
         	exit(-1);
     	}
+////////////TO BE REMOVED/////////
+
 	int socketDescriptor=-1;
     	socketDescriptor=connectionForClientRequests(socketDescriptor);
     	printf("netclose: Connected to %s\n",ipAddressArray);
@@ -327,6 +342,7 @@ int netclose(int fd)
 */ 
 int netserverinit(char *hostname)
 {
+
     	//printf("CALLING FUNCTIN OF THIS TYPE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
     	int setSocketDescriptor=-1;
     	int status=0;
@@ -343,7 +359,9 @@ int netserverinit(char *hostname)
         	return -1;
     	}
 	printf("%s\n","Success! Hostname found!");
+////////////TO BE REMOVED/////////
 	netInitServerFlag=1;
+////////////TO BE REMOVED/////////
     	return 0;
 }
 

@@ -166,16 +166,13 @@ clientPacketData* handleOpenRequest(clientPacketData* packet,char buffer[MAXBUFF
 	}
        //check the count of the file descriptor and make sure its less than the length of the fdArray and set the countFileDescriptor to be equal to the current file descriptor
        
-///////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
       	pthread_mutex_lock(&userListMutex);
 	FileDescriptorTable* newPacket = (FileDescriptorTable*)malloc(sizeof(FileDescriptorTable));
 	newPacket->packetData = packet;
 	newPacket->next = NULL;
 	insertLinkedList(newPacket);
 	pthread_mutex_unlock(&userListMutex);
-//////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////
+       
 	if(countFileDescriptor<512)
 	{
 		fdArray[countFileDescriptor]=currentResult;
@@ -453,18 +450,8 @@ clientPacketData* handleCloseRequest(clientPacketData* packet, char buffer[MAXBU
 		FileDescriptorTable* currentTable=tableFD;
 		//check if the fd exists in our record
 		
-///////////////////
-		if(currentTable == NULL){
-			printf("*** *** The table is empty??\n");
-		}
-		
-
-//////////////////
 		while(currentTable!=NULL)
 		{
-///
-			printf("fd: %d\n", currentTable->packetData->serverFileDescriptor);
-///
 			if(currentTable->packetData->serverFileDescriptor==(fdClose*-1))
 			{
 				exists=1;
@@ -474,7 +461,6 @@ clientPacketData* handleCloseRequest(clientPacketData* packet, char buffer[MAXBU
 		pthread_mutex_unlock(&userListMutex);
 		if(exists==0)
 		{
-printf("*** The fd DOES NOT exist in the table!!!\n");
 			//let client know something happened, send errno 
 			int n=htonl(-1);
 			if(send(packet->clientFileDescriptor,&n,sizeof(n),0)==-1)
@@ -491,7 +477,6 @@ printf("*** The fd DOES NOT exist in the table!!!\n");
 		}
 		else //fd exists, let client know success
 		{
-printf("*** The fd exists in the table!!!\n");
 			removeNode(packet);
 			if(send(packet->clientFileDescriptor,&closedFD,sizeof(closedFD),0)==-1)
 			{
@@ -537,6 +522,60 @@ void *clientRequestCalls(void *clientInfoRequest)
 			printf("NetClose Requst: IP Address %s\n",packet->ipAddress);
       			packet=handleCloseRequest(packet, buffer, errorNumber);
       			printf("NetClose: Finished Operation.\n");
+      			close(packet->clientFileDescriptor);
+      			break;
+		case NETCREATE:
+			printf("NetCreate Requst: IP Address %s\n",packet->ipAddress);
+      			packet=handleCloseRequest(packet, buffer, errorNumber);
+      			printf("NetCreate: Finished Operation.\n");
+      			close(packet->clientFileDescriptor);
+      			break;
+		case NETFLUSH:
+			printf("NetFlush Requst: IP Address %s\n",packet->ipAddress);
+      			packet=handleCloseRequest(packet, buffer, errorNumber);
+      			printf("NetFlush: Finished Operation.\n");
+      			close(packet->clientFileDescriptor);
+      			break;
+		case NETRELEASE:
+			printf("NetRelease Requst: IP Address %s\n",packet->ipAddress);
+      			packet=handleCloseRequest(packet, buffer, errorNumber);
+      			printf("NetRelease: Finished Operation.\n");
+      			close(packet->clientFileDescriptor);
+      			break;
+		case NETTRUNCATE:
+			printf("NetTruncate Requst: IP Address %s\n",packet->ipAddress);
+      			packet=handleCloseRequest(packet, buffer, errorNumber);
+      			printf("NetTruncate: Finished Operation.\n");
+      			close(packet->clientFileDescriptor);
+      			break;
+		case NETGETATTR:
+			printf("NetGetattr Requst: IP Address %s\n",packet->ipAddress);
+      			packet=handleCloseRequest(packet, buffer, errorNumber);
+      			printf("NetGetattr: Finished Operation.\n");
+      			close(packet->clientFileDescriptor);
+      			break;
+		case NETOPENDIR:
+			printf("NetOpendir Requst: IP Address %s\n",packet->ipAddress);
+      			packet=handleCloseRequest(packet, buffer, errorNumber);
+      			printf("NetOpendir: Finished Operation.\n");
+      			close(packet->clientFileDescriptor);
+      			break;
+		case NETREADDIR:
+			printf("NetReaddir Requst: IP Address %s\n",packet->ipAddress);
+      			packet=handleCloseRequest(packet, buffer, errorNumber);
+      			printf("NetReaddir: Finished Operation.\n");
+      			close(packet->clientFileDescriptor);
+      			break;
+		case NETRELEASEDIR:
+			printf("NetReleasedir Requst: IP Address %s\n",packet->ipAddress);
+      			packet=handleCloseRequest(packet, buffer, errorNumber);
+      			printf("NetReleasedir: Finished Operation.\n");
+      			close(packet->clientFileDescriptor);
+      			break;
+		case NETMKDIR:
+			printf("NetMkdir Requst: IP Address %s\n",packet->ipAddress);
+      			packet=handleCloseRequest(packet, buffer, errorNumber);
+      			printf("NetMkdir: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
   	}
