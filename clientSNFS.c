@@ -1,17 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <header.h>
-
-static struct fuse_operations = {
-    .getattr = do_getattr,
-    .create = do_create
-}
-
-int main(int argc, char* argv[]){
-    
-
-}
+#include "header.h"
 
 int do_getattr(const char* path, struct stat* st){
         st-> st_uid = getuid();
@@ -27,5 +17,13 @@ int do_getattr(const char* path, struct stat* st){
             st->st_nlink = 1;
             st->st_size = 1024;
         }
-        return 0
+        return 0;
 }
+
+int main(int argc, char* argv[]){
+    struct fuse_operations* fops = (struct fuse_operations*)malloc(sizeof(struct fuse_operations));
+    fops -> getattr = do_getattr;
+
+    return fuse_main( argc, argv, fops, NULL );
+}
+

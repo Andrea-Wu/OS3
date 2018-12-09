@@ -1,0 +1,46 @@
+TEST BASE CASE, any mode can be used since we only use one client to test
+
+run netserverinit(), test with good and bad host
+run netserverinit(), test with good and bad file mode
+
+run netopen(), these cases should return error
+-->read on write only file
+-->write on read only file
+
+rdwr on rdwr file, this case should work
+-->call netread(), should read nbytes into buffer
+	-->call netread on bad fd, should return error
+-->call netwrite(), should write nbytes of buffer into file
+	-->call netwrite on bad fd, should return error
+
+run netclose()
+-->test on current file, should work
+-->test on bad fd, should return error
+
+
+TEST EXTENSION A:
+
+Make three clients, one in transaction, on in exclusive, one in unrestricted
+
+1.	Open a file in transaction mode. When we try to open the same file in any other mode,
+	should return error
+2. 	Open a file in any mode other than transaction mode. When we try to open the same file
+	in transaction mode, should return error
+3.	Open a file in exclusive mode with write privileges. 
+	-->Any other open wanting write privilege on the same file should return error
+	-->Ay other open wanting read-only privilege should work
+4.	Open a file in unrestricted mode with write privileges. When we try to open the same
+	file with exclusive mode:
+	-->Any other unrestricted opens of the same file should work
+	-->Any other open wanting read-only privilege in exclusive mode on the same file
+	   should work
+	-->Any other open wanting write privilege on the same file in exclusive mode
+	   should return error
+
+	   
+Other Tests/Results (Test Cases above still apply):
+1.	Unless a file is open in transaction mode, any read-only request in any mode 
+	should work.
+2.	If a file is open in exclusive mode but does not have write privilege, any request
+	in unrestricted mode should work. Otherwise, only read-only requests in exclusive and
+	unrestricted mode should work, any other should return error
