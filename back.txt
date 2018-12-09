@@ -1,0 +1,10 @@
+fuse intercepts getattr
+fuse intercepts getattr
+fuse intercepts getattr
+fuse intercepts getattr
+fuse intercepts getattr
+fuse intercepts getattr
+open => path is /help.txt
+truncated
+fuse intercepts getattr
+writed

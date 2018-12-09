@@ -1,0 +1,10 @@
+fuse intercepts getattr
+fuse intercepts getattr
+fuse intercepts getattr
+fuse intercepts getattr
+fuse intercepts getattr
+fuse intercepts getattr
+fuse intercepts getattr
+openDiredi -> path is /
+readDired -> path is /
+releaseDired
