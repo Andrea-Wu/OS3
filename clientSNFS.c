@@ -325,10 +325,79 @@ int do_opendir(const char * path, struct fuse_file_info * ffi){
 }
 
 //readdir
-int do_readdir(const char * path, void * idk, fuse_fill_dir_t idk_either, off_t offset, struct fuse_file_info * ffi){
+int do_readdir(const char * path, void * idk, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info * ffi){
+    	int sockDescriptor=-1;
+	//Establish a connection for the NetRead requested
+    	sockDescriptor=connectionForClientRequests(sockDescriptor);
+    	printf("readdir: Connected to %s\n", ipAddressArray);
+	//For Thread synchronization
+	sleep(1);
+	printf("readdir: Sending File Mode\n");
+	
+/*
+	int messageOpenRequest=htonl(NETOPEN);
+	//send data to server side with the message being NetOpen, since we must open the file before we read it
+	if(send(sockDescriptor,&messageOpenRequest,sizeof(messageOpenRequest),0)==-1)
+	{
+        	perror("NetOpen request fails");
+    	}
+	sleep(1);
+*/
+    	int netreadMessage=htonl(NETREADDIR);
+	//send data to server side with message being NetRead
+    	if(send(sockDescriptor,&netreadMessage,sizeof(int),0)==-1){
+        	perror("ReadDir request fails");
+    	}
 
-    printf("readDired -> path is %s\n", path);
-    return 0;
+    	sleep(1);
+	    printf("ReadDir: Sending Directory path name\n");
+    	//Send String to the client 
+    	//printf("netwrite: Sending String.\n");
+    	if(send(socketDescriptor,path,strlen(path),0)==-1){
+        	perror("ERROR: NetWrite request fails to send over string message to the server!\n");
+    	}
+    
+	
+	int offset_to_read = htonl(offset);
+	if(send(sockDescriptor,&offset_to_read, sizeof(int),0) == -1){
+		perror("ERROR: NetRead cound not send the bytes over to be read to the server");
+	}
+
+	//Here we set up to receive the result from the server
+	printf("NetRead: waiting to receive result\n");
+    	int resultSize=0;
+    	int resultMessage=0;
+    	if((resultMessage=recv(sockDescriptor,&resultSize,sizeof(resultSize),0))==-1)
+	{
+        	perror("ERROR: NetRead request could not read receive the results");
+    	}
+	int result=resultSize;
+    	printf("NetRead: Received result size: %d\n", result);
+	//Check for possible errors from NetRead requests
+    	if(result==-1)
+	{
+        	int errorMessage=0;
+		if((resultMessage=recv(sockDescriptor,&errorMessage,sizeof(errorMessage),0))==-1)
+		{
+            		perror("NetRead requests receives an error");
+        	}
+		errno=errorMessage;
+		//set the value of errno
+        	printf("Errno Is: %s\n",strerror(errno));
+    	}
+    	else
+	{
+        	//char resultString[MAXBUFFERSIZE];
+        	if(recv(sockDescriptor,buf,size,0)==-1)
+		{
+            		perror("NetRead requests receives error from server");
+        	}
+    	}
+	
+    	close(sockDescriptor);
+    	return result;
+
+
 }
 
 //releasedir
