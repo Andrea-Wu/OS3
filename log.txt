@@ -1,4 +1,4 @@
-fuse intercepts getattr
+Reviewing If Address Info Is Valid For: facade.cs.rutgers.edu
 fuse intercepts getattr
 fuse intercepts getattr
 fuse intercepts getattr
@@ -8,3 +8,33 @@ fuse intercepts getattr
 openDiredi -> path is /
 readDired -> path is /
 releaseDired
+fuse intercepts getattr
+fuse intercepts getattr
+fuse intercepts getattr
+fuse intercepts getattr
+fuse intercepts getattr
+open => path is /test.txt
+NetOpen: Connected to 2.0.50.207
+NetOpen: Sending File Mode.
+NetOpen: Sending Path.
+NetOpen: Sending Flags
+NetOpen: recieved result FD!
+truncated
+fuse intercepts getattr
+flushing => path is /test.txt
+netwrite: Connected to 2.0.50.207
+NetWrite request sending over file descriptor to server
+NetWrite: Received result size of: -1
+flushing => path is /test.txt
+released => path is /test.txt
+fuse intercepts getattr
+openDiredi -> path is /
+readDired -> path is /
+releaseDired
+fuse intercepts getattr
+fuse intercepts getattr
+fuse intercepts getattr
+openDiredi -> path is /
+readDired -> path is /
+releaseDired
+fuse intercepts getattr

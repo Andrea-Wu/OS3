@@ -222,6 +222,16 @@ clientPacketData* handleReadRequest(clientPacketData* packet, char buffer[MAXBUF
 	//convert into 32-bit integer host byte order
 	size_t numBytesToBeRead=ntohl(currentBytesReceived);
       	printf("NetRead: Received nbytes that are to be read: %d\n", numBytesToBeRead);
+      	
+	off_t offsetBytesReceived;
+	//check the data received from the NetRead request from client and see whether or not it returns -1, if so print error message
+	if((messageBit=recv(packet->clientFileDescriptor,&offsetBytesReceived,sizeof(offsetBytesReceived),0))==-1)
+	{
+       		perror("ERROR: Netread request could not receive any number of bytes from client");
+      	}
+	//convert into 32-bit integer host byte order
+	off_t numBytesToBeOffset =ntohl(offsetBytesReceived);
+      	printf("NetRead: Received offset: %d\n", numBytesToBeOffset);
 	sleep(1);
 	//if the file descriptor is -1 
 	//then bad file descriptor
@@ -255,6 +265,9 @@ clientPacketData* handleReadRequest(clientPacketData* packet, char buffer[MAXBUF
       	int currentBitsReadInFlag=0;
       	int currentByesResult=0;
       	pthread_mutex_lock(&userListMutex);
+////////New for offset
+	lseek(readfd, numBytesToBeOffset, SEEK_SET);
+	
 	//shared data segment so lock the critical section
 	//check if the numBytesToBeRead is greater than the MAXBUFFERSIZE which is 512
       	if(numBytesToBeRead>MAXBUFFERSIZE)
@@ -389,10 +402,25 @@ clientPacketData* handleWriteRequest(clientPacketData* packet, char buffer[MAXBU
       	buffer[stringMessage]='\0';
       	printf("NetWrite: Received string: %s\n", buffer);
       	sleep(1);
-	//pthread_mutex_lock(&userListMutex);
+	
+	off_t offsetBytesReceived;
+	int messageBit;
+	//check the data received from the NetRead request from client and see whether or not it returns -1, if so print error message
+	if((messageBit=recv(packet->clientFileDescriptor,&offsetBytesReceived,sizeof(offsetBytesReceived),0))==-1)
+	{
+       		perror("ERROR: Netwrite request could not receive the offset from client");
+      	}
+	//convert into 32-bit integer host byte order
+	off_t numBytesToBeOffset =ntohl(offsetBytesReceived);
+      	printf("NetWrite: Received offset: %d\n", numBytesToBeOffset);
+	sleep(1);
+
+
+pthread_mutex_lock(&userListMutex);
       	//printf("NetWrite: Trying to write to the file\n");
-      	int writeresult=write(writefd, buffer, writenbyte);
-	//pthread_mutex_unlock(&userListMutex);
+      	lseek(writefd, numBytesToBeOffset, SEEK_SET);
+	int writeresult=write(writefd, buffer, writenbyte);
+pthread_mutex_unlock(&userListMutex);
       	int writeresultCurrent=htonl(writeresult);
       	if(send(packet->clientFileDescriptor,&writeresultCurrent,sizeof(writeresultCurrent),0)==-1)
 	{
@@ -487,6 +515,86 @@ clientPacketData* handleCloseRequest(clientPacketData* packet, char buffer[MAXBU
       	return packet;
 }
 
+clientPacketData* handleMkdirRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
+	
+
+	int validPath=0;
+      	if((validPath=recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1)
+	{ 
+		//getting file name to open
+        	perror("NetMkdir: Could not receive path");
+        	exit(1);
+      	}
+	buffer[validPath]='\0';
+      	printf("NetMkdir: Received path: %s\n", buffer);
+      	packet->fileName=malloc(validPath);
+	//copy the name of the filename into the buffer
+     	strcpy(packet->fileName, buffer);
+	//check the flags received this means flags such as O_RDONLY,O_WRONLY,O_RDWR...etc
+      	int flagsReceived=0;
+      	int checkFlag=0;
+	//if the flags received from the client side is equal to -1
+	//then print error message saying we have an issue recing flags from client 
+      	if((checkFlag=recv(packet->clientFileDescriptor,&flagsReceived,sizeof(int),0))==-1)
+	{
+        	perror("ERROR: Netopen request has an issue in receiving flags!\n");
+      	}
+	//Convert the flagsReceived into a 32-bit integer in host byte order this is used for data exchange with the method ntohl
+      	int flags=ntohl(flagsReceived);
+      	printf("NetOpen: Received flags: %i\n",flags);
+	//initialize the packet field modeFlags with flags
+      	packet->modeFlags=flags;
+	// try actually opening the dir and then sending the result FD back
+      	printf("NetMkdir: Trying to open the file\n");
+      	int result=0;
+      	result=mkdir(buffer,flags);
+	//Check the result of open 
+	//If not -1, then we know that the file was able to open successfully 
+	//and we return the negative version of the server file descriptor back to the client side
+      	if(result!=-1)
+      	{
+          packet->serverFileDescriptor=-1*result;
+      	}
+	//send over the data the server processed back to the server side!
+	//first check to see if send does not return -1
+	int currentResult=0;
+      	currentResult=result;
+	//if so then we have a bad file descriptor
+      	if (send(packet->clientFileDescriptor,&currentResult,sizeof(int),0)==-1)
+      	{
+        	perror("ERROR: NetMkdir request has received a bad file descriptor!\n");
+      	}
+      	//if there was an error getting the resulting FD
+      	if(result==-1)
+      	{
+		//Could not send data back to the client properly so we send errno
+        	if(send(packet->clientFileDescriptor,&errorNumber,sizeof(errorNumber),0)==-1)
+		{
+           		perror("NetMkdir: issue with sending errno");
+        	}
+	}
+       //check the count of the file descriptor and make sure its less than the length of the fdArray and set the countFileDescriptor to be equal to the current file descriptor
+       
+      	pthread_mutex_lock(&userListMutex);
+	FileDescriptorTable* newPacket = (FileDescriptorTable*)malloc(sizeof(FileDescriptorTable));
+	newPacket->packetData = packet;
+	newPacket->next = NULL;
+	insertLinkedList(newPacket);
+	pthread_mutex_unlock(&userListMutex);
+       
+	if(countFileDescriptor<512)
+	{
+		fdArray[countFileDescriptor]=currentResult;
+	}
+	else
+	{
+		printf("ERROR: NetMkdir request has received too many files too open.\n");
+		countFileDescriptor++;
+	}
+
+	return packet;
+}
+
 //function pointer for thread handler 
 //this is used to get the message from the client side on whether they called 
 //NETOPEN = 0
@@ -527,54 +635,54 @@ void *clientRequestCalls(void *clientInfoRequest)
 		case NETCREATE:
 			printf("NetCreate Requst: IP Address %s\n",packet->ipAddress);
       			packet=handleCloseRequest(packet, buffer, errorNumber);
-      			printf("NetCreate: Finished Operation.\n");
+      			//printf("NetCreate: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
 		case NETFLUSH:
 			printf("NetFlush Requst: IP Address %s\n",packet->ipAddress);
       			packet=handleCloseRequest(packet, buffer, errorNumber);
-      			printf("NetFlush: Finished Operation.\n");
+      			//printf("NetFlush: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
 		case NETRELEASE:
 			printf("NetRelease Requst: IP Address %s\n",packet->ipAddress);
       			packet=handleCloseRequest(packet, buffer, errorNumber);
-      			printf("NetRelease: Finished Operation.\n");
+      			//printf("NetRelease: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
 		case NETTRUNCATE:
 			printf("NetTruncate Requst: IP Address %s\n",packet->ipAddress);
       			packet=handleCloseRequest(packet, buffer, errorNumber);
-      			printf("NetTruncate: Finished Operation.\n");
+      			//printf("NetTruncate: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
 		case NETGETATTR:
 			printf("NetGetattr Requst: IP Address %s\n",packet->ipAddress);
       			packet=handleCloseRequest(packet, buffer, errorNumber);
-      			printf("NetGetattr: Finished Operation.\n");
+      			//printf("NetGetattr: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
 		case NETOPENDIR:
 			printf("NetOpendir Requst: IP Address %s\n",packet->ipAddress);
       			packet=handleCloseRequest(packet, buffer, errorNumber);
-      			printf("NetOpendir: Finished Operation.\n");
+      			//printf("NetOpendir: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
 		case NETREADDIR:
 			printf("NetReaddir Requst: IP Address %s\n",packet->ipAddress);
       			packet=handleCloseRequest(packet, buffer, errorNumber);
-      			printf("NetReaddir: Finished Operation.\n");
+      			//printf("NetReaddir: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
 		case NETRELEASEDIR:
 			printf("NetReleasedir Requst: IP Address %s\n",packet->ipAddress);
       			packet=handleCloseRequest(packet, buffer, errorNumber);
-      			printf("NetReleasedir: Finished Operation.\n");
+      			//printf("NetReleasedir: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
 		case NETMKDIR:
 			printf("NetMkdir Requst: IP Address %s\n",packet->ipAddress);
-      			packet=handleCloseRequest(packet, buffer, errorNumber);
+      			packet=handleMkdirRequest(packet, buffer, errorNumber);
       			printf("NetMkdir: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
