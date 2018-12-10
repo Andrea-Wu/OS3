@@ -1,40 +1,182 @@
 Reviewing If Address Info Is Valid For: facade.cs.rutgers.edu
 fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
 fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
 fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: Bad address
 fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: Bad address
 fuse intercepts getattr
-fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: Bad address
 openDiredi -> path is /
 readDired -> path is /
 releaseDired
 fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: Bad address
 fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: Bad address
 fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
 fuse intercepts getattr
-fuse intercepts getattr
-open => path is /test.txt
-NetOpen: Connected to 2.0.50.207
-NetOpen: Sending File Mode.
-NetOpen: Sending Path.
-NetOpen: Sending Flags
-NetOpen: recieved result FD!
-truncated
-fuse intercepts getattr
-flushing => path is /test.txt
-netwrite: Connected to 2.0.50.207
-NetWrite request sending over file descriptor to server
-NetWrite: Received result size of: -1
-flushing => path is /test.txt
-released => path is /test.txt
-fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: Bad address
 openDiredi -> path is /
 readDired -> path is /
 releaseDired
 fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: Bad address
 fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: Bad address
 fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+openDiredi -> path is /
+releaseDired
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+openDiredi -> path is /
+releaseDired
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: Bad address
 openDiredi -> path is /
 readDired -> path is /
 releaseDired
 fuse intercepts getattr
+Netgetattr: Connected to 2.0.50.207
+NetGetattr: Sending Path.
+Errno Is: Bad address

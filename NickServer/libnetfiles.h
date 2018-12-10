@@ -3,6 +3,7 @@
 #define INVALID_FILE_MODE -214
 #define DENIED_ACCESS -215
 #include <netinet/in.h>
+#include <sys/stat.h>
 /*
  *Function prototypes for libnetfiles library
 */

@@ -35,28 +35,136 @@ int connectionForClientRequests(int socketDescript)
 }
 
 
-int do_getattr(const char* path, struct stat* st){
-        st-> st_uid = getuid();
-        st->st_gid = getgid();
-        st->st_atime = time( NULL );
-        st->st_mtime = time( NULL ); 
-
-        if(strcmp(path, "/") == 0){ //what is "/" relative to?
-            st->st_mode = S_IFDIR | 0755;
-            st->st_nlink = 2; 
-        }else{
-            st->st_mode = S_IFREG | 0644;
-            st->st_nlink = 1;
-            st->st_size = 1024;
-        }
+int do_getattr(const char* path, struct stat* st, struct fuse_file_info* ffi){
 
         printf("fuse intercepts getattr\n");
-        return 0;
+	int sockDescriptor=-1;
+	//Establish a connection for the NetGetattr requested
+    	sockDescriptor=connectionForClientRequests(sockDescriptor);
+    	printf("Netgetattr: Connected to %s\n", ipAddressArray);
+	//For Thread synchronization
+	sleep(1);
+	
+	int netreadMessage=htonl(NETGETATTR);
+	//send data to server side with message being NetRead
+    	if(send(sockDescriptor,&netreadMessage,sizeof(int),0)==-1)
+	{
+        	perror("NetRead request fails");
+    	}
+	sleep(1);
+	printf("NetGetattr: Sending Path.\n");
+        if(send(sockDescriptor,path,strlen(path),0)==-1)
+        {
+                perror("ERROR: NetGetattr request could not send path!\n");
+        }
+        sleep(1);
+
+	
+
+
+/////////////////////
+	int result=0;
+    	int resultMessage=0;
+    	if((resultMessage=recv(sockDescriptor,&result,sizeof(result),0))==-1)
+	{
+        	perror("ERROR: NetGetattr request could not read receive the results");
+    	}
+	
+	//Check for possible errors from NetGetattr requests
+    	if(result==-1)
+	{
+        	int errorMessage=0;
+		if((resultMessage=recv(sockDescriptor,&errorMessage,sizeof(errorMessage),0))==-1)
+		{
+            		perror("NetGetattr requests receives an error");
+        	}
+		errno=errorMessage;
+		//set the value of errno
+        	printf("Errno Is: %s\n",strerror(errno));
+    	}
+    	else
+	{
+        	//char resultString[MAXBUFFERSIZE];
+        	if(recv(sockDescriptor,st,sizeof(struct stat),0)==-1)
+		{
+            		perror("NetGetattr requests receives error from server");
+        	}
+    	}
+	
+    	close(sockDescriptor);
+	
+        return result;
 }
 
 //create
 int do_create(const char * path, mode_t mode, struct fuse_file_info * ffi){
     printf("fuse intercepts create\n");
+	
+	int socketDescriptor=-1;
+	//estbalish a connection for the following socket descriptor
+    	socketDescriptor=connectionForClientRequests(socketDescriptor);
+    	printf("NetCreate: Connected to %s\n",ipAddressArray);
+   	sleep(1);
+    	/***Make a seperate method for sending pathname and flags from the code below!***/
+	printf("NetCreate: Sending File Mode.\n");
+	
+	int createRequest=htonl(NETOPEN);
+        if(send(socketDescriptor,&createRequest,sizeof(createRequest),0)==-1)
+        {
+                perror("ERROR: NetCreate request could not read the message!\n");
+        }
+        sleep(1);
+	printf("NetCreate: Sending Path.\n");
+        if(send(socketDescriptor,path,strlen(path),0)==-1)
+        {
+                perror("ERROR: NetCreate request could not send path!\n");
+        }
+        sleep(1);
+	//sending flags to server side to handle client requests
+        printf("NetCreate: Sending Flags\n");
+        int flagsForRequest=htonl(mode);
+        if(send(socketDescriptor,&flagsForRequest,sizeof(flagsForRequest),0)==-1)
+        {
+                perror("ERROR: NetCreate request could not send flags to server!");
+        }
+        //printf("NetCreate: waiting to receive result.\n");
+        int resultFileDescriptor=0;
+        int resultMessageFromServer=0;
+	//Receiving data back from the server side, check whether or not server side returns an error
+        if((resultMessageFromServer=recv(socketDescriptor,&resultFileDescriptor,sizeof(resultFileDescriptor),0))==-1)
+        {
+                perror("ERROR: NetCreate request could not receive result from server!\n");
+                exit(-1);
+        }
+        printf("NetCreate: recieved result FD!\n");
+        int resultFromServer=resultFileDescriptor;
+        int errorTypeMessage=0;
+	//Now that we received a file descriptr make sure it does not equal -1, which means there is an error!
+	if(resultFromServer==-1)
+        {
+		//NetCreate fails to receive errno from server
+                if((resultFromServer=recv(socketDescriptor,&errorTypeMessage,sizeof(errorTypeMessage),0))==-1)
+                {
+                         perror("ERROR: NetCreate request does not receive errno!\n");
+                }
+		//Checking errno and whether permission was denied!
+                if(errorTypeMessage==DENIED_ACCESS)
+                {
+                        errno=13;
+                        perror("ERROR: NetCreate request could not open file due to restrictions.");
+                }
+                else
+                {
+                        errno=errorTypeMessage;
+                        perror("ERROR from server side!");
+                }
+        }
+	//close the socket
+        close(socketDescriptor);
+	//return the result
+        
+	ffi->fh = resultFromServer;
+
     return 0;
 }
 
@@ -140,6 +248,7 @@ int handleNetOpenRequests(int socketDescriptor,const char* pathname,int flags)
         {
                  return resultFromServer;
         }
+	
         return -1*resultFromServer;
 	
 }
