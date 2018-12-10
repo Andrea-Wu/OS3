@@ -273,8 +273,7 @@ clientPacketData* handleReadRequest(clientPacketData* packet, char buffer[MAXBUF
       	int fdReceiver=0;
       	int fdMessage=0;
 	//Check the data received from the NetRead request and see whether or not is wable to receive the message by checking to see if recv returns -1
-	if((fdMessage=recv(packet->clientFileDescriptor, &fdReceiver,sizeof(fdReceiver),0))==-1)
-	{
+	if((fdMessage=recv(packet->clientFileDescriptor, &fdReceiver,sizeof(fdReceiver),0))==-1){
         	perror("ERROR: Netread request could not receive the message");
       	}
 	int readfd=0;
@@ -676,6 +675,36 @@ clientPacketData* handleMkdirRequest(clientPacketData* packet, char buffer[MAXBU
 	return packet;
 }
 
+
+clientPacketData* handleReaddirRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
+
+    char* msgReciever = (char*)malloc(sizeof(char) * 100);
+    int offsetReciever = 0;
+    if((fdMessage=recv(packet->clientFileDescriptor, &msgReceiver,sizeof(msgReceiver),0))==-1){
+        	perror("ERROR: Netread request could not receive the directory name");
+    }else{
+        printf("readdir recieved directory name\n");
+    }
+
+    if((fdMessage=recv(packet->clientFileDescriptor, &offsetReciever,sizeof(offsetReceiver),0))==-1){
+        	perror("ERROR: Netread request could not receive the offset");
+    }else{
+        printf("readdir recieved offset")
+    }
+
+    //run readdir and send back the result
+    
+    char *strcat(char *dest, const char *src)
+    newPath = (char*)malloc(sizeof(char) * 100);
+    strcpy(newPath, "/tmp/OSFake");
+    strcat(newPath, msgReciever);
+
+    struct dirent* readDirRes = readdir(newPath);
+
+
+
+}
+<<<<<<< HEAD
 clientPacketData* handleGetattrRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
 
 	struct stat* temp;
@@ -724,6 +753,37 @@ clientPacketData* handleGetattrRequest(clientPacketData* packet, char buffer[MAX
 }
 
 
+=======
+clientPacketData* handleReaddirRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
+
+    char* msgReciever = (char*)malloc(sizeof(char) * 100);
+    int offsetReciever = 0;
+    if((fdMessage=recv(packet->clientFileDescriptor, &msgReceiver,sizeof(msgReceiver),0))==-1){
+        	perror("ERROR: Netread request could not receive the directory name");
+    }else{
+        printf("readdir recieved directory name\n");
+    }
+
+    if((fdMessage=recv(packet->clientFileDescriptor, &offsetReciever,sizeof(offsetReceiver),0))==-1){
+        	perror("ERROR: Netread request could not receive the offset");
+    }else{
+        printf("readdir recieved offset")
+    }
+
+    //run readdir and send back the result
+    
+    char *strcat(char *dest, const char *src)
+    newPath = (char*)malloc(sizeof(char) * 100);
+    strcpy(newPath, "/tmp/OSFake");
+    strcat(newPath, msgReciever);
+
+    struct dirent* readDirRes = readdir(newPath);
+
+
+
+}
+
+>>>>>>> c35329db81fae2183882f7760ccc8c62411c0642
 //function pointer for thread handler 
 //this is used to get the message from the client side on whether they called 
 void *clientRequestCalls(void *clientInfoRequest)
@@ -795,7 +855,7 @@ void *clientRequestCalls(void *clientInfoRequest)
       			break;
 		case NETREADDIR:
 			printf("NetReaddir Requst: IP Address %s\n",packet->ipAddress);
-      			packet=handleCloseRequest(packet, buffer, errorNumber);
+      			packet=handleReaddirRequest(packet, buffer, errorNumber);
       			//printf("NetReaddir: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
@@ -853,22 +913,22 @@ int main(int argc, char * argv[])
     		clientPacketData* packet=malloc(sizeof(clientPacketData));
     		strcpy(packet->ipAddress,currentBuffer);
     		packet->clientFileDescriptor=serverFileDescriptor;
-		int filemode=0;
+		    int filemode=0;
     		int modemsg=0;
-		//get the metadata from the client side
-		//Receiving the first message from the client
+		    //get the metadata from the client side
+		    //Receiving the first message from the client
     		int msg_type=0;
     		int msg=0;
-    		if((msg=recv(serverFileDescriptor,&msg_type,sizeof(int),0))==-1)
-		{
+    		if((msg=recv(serverFileDescriptor,&msg_type,sizeof(int),0))==-1){
       			perror("ERROR: Issue with first receiving open/close/read/write code");
       			exit(1);
     		}
+
     		packet->messageMode=ntohl(msg_type);
     		printf("Received: %x from %s\n", packet->messageMode, currentBuffer);
-		//This is used to create a thread ID
-		pthread_t child;
-		//spawn a new thread for each client request
+		    //This is used to create a thread ID
+		    pthread_t child;
+		    //spawn a new thread for each client request
     		pthread_create(&child, NULL, clientRequestCalls, (void *)packet);
   	}
   	return 0;
