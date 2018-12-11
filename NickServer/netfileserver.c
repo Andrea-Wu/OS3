@@ -704,7 +704,7 @@ clientPacketData* handleReaddirRequest(clientPacketData* packet, char buffer[MAX
 
 
 }
-<<<<<<< HEAD
+
 clientPacketData* handleGetattrRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
 
 	struct stat* temp;
@@ -753,7 +753,6 @@ clientPacketData* handleGetattrRequest(clientPacketData* packet, char buffer[MAX
 }
 
 
-=======
 clientPacketData* handleReaddirRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
 
     char* msgReciever = (char*)malloc(sizeof(char) * 100);
@@ -783,7 +782,6 @@ clientPacketData* handleReaddirRequest(clientPacketData* packet, char buffer[MAX
 
 }
 
->>>>>>> c35329db81fae2183882f7760ccc8c62411c0642
 //function pointer for thread handler 
 //this is used to get the message from the client side on whether they called 
 void *clientRequestCalls(void *clientInfoRequest)
