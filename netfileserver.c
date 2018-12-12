@@ -774,12 +774,11 @@ clientPacketData* handleGetattrRequest(clientPacketData* packet, char buffer[MAX
 
 	struct stat* temp = (struct stat*)malloc(sizeof(struct stat));	
 	int validPath=0;
-    if((validPath=recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){ 
-	//getting file name to open
-        perror("NetGetattr: Could not receive path");
-        exit(1);
-    }
-	buffer[validPath]='\0';
+    //if((validPath=recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){ 
+    fread(buffer, MAXBUFFERSIZE, 1, packet->sock);
+    perror("NetGetattr tries to recieve path =>");
+	
+    buffer[validPath]='\0';
 	//If valid path them simply print the path to the file
       	printf("NetGetattr: Received path: %s\n", buffer);
 
@@ -798,30 +797,26 @@ clientPacketData* handleGetattrRequest(clientPacketData* packet, char buffer[MAX
     }
 
 	//send back the stat result back to the client
-	if(send(packet->clientFileDescriptor, &stat_result,sizeof(int),0)==-1)
-	{
-		perror("ERROR: NetGetattr request has an issue in sending result!");
-	}
+	//if(send(packet->clientFileDescriptor, &stat_result,sizeof(int),0)==-1){
+    fwrite(&stat_result, sizeof(int), 1, packet->sock);
+	perror("getattr tries to send result => ");
+
 	//if there was an error getting the resulting size
-	if(stat_result == -1)
-	{
+	if(stat_result == -1){
 		//send errno back to the client 
-        	printf("NetGetattr: Sending errno :%d\n", errno);
-        	errorNumber=errno;
+        printf("NetGetattr: Sending errno :%d\n", errno);
+        errorNumber=errno;
 		//Check whether or not the data to be sent back to the client is equal to -1
-        	if(send(packet->clientFileDescriptor,&errorNumber,sizeof(errorNumber),0)==-1)
-		{
-			perror("ERROR: NetRead request could not send errno to client!");
-        	}
-        	return packet;
-	}
-	else
-	{
+        //if(send(packet->clientFileDescriptor,&errorNumber,sizeof(errorNumber),0)==-1){
+        fwrite(&errorNumber, sizeof(int), 1, packet -> sock);
+		perror("getattr tries to send errno to client! => ");
+        return packet;
+	}else{
 		printf("NetGetattr: Sending stat");
-	        if(send(packet->clientFileDescriptor,temp,sizeof(struct stat),0)==-1)
-		{
-			perror("ERROR: NetRead request has an issue with sending the buffer back to the client");
-	        }
+        //if(send(packet->clientFileDescriptor,temp,sizeof(struct stat),0)==-1){
+        fwrite(temp, sizeof(struct stat), 1, packet-> sock); 
+        perror("ERROR: NetRead request has an issue with sending the buffer back to the client");
+        
 	}
 	return packet;
 
@@ -889,6 +884,7 @@ void *clientRequestCalls(void *clientInfoRequest)
       			packet=handleGetattrRequest(packet, buffer, errorNumber);
       			//printf("NetGetattr: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
+                fclose(packet -> sock);
       			break;
 		case NETOPENDIR: //(I am not sure if this is necessary)
 			printf("NetOpendir Requst: IP Address %s\n",packet->ipAddress);
@@ -938,12 +934,13 @@ int main(int argc, char * argv[])
 	char currentBuffer[INET_ADDRSTRLEN]; //INET_ADDRSTRLEN reperets sents the 16 integer length IP ADDRESS
   	struct sockaddr_storage clientAddress;
   	socklen_t addressSize;
-  	while(1)
-	{
-    		//accept()waits for connections to come in to connect to
-    		addressSize=sizeof(clientAddress);
+  	while(1){
+    	//accept()waits for connections to come in to connect to
+    	addressSize=sizeof(clientAddress);
 		//accept new connections from the client
-    		serverFileDescriptor=accept(socketFileDescriptor,(struct sockaddr *)&clientAddress,&addressSize);
+    	serverFileDescriptor=accept(socketFileDescriptor,(struct sockaddr *)&clientAddress,&addressSize);
+        
+
 		//if the serverFileDescriptor returns -1 than we have an error in accepting the connection from the client
     		if(serverFileDescriptor==-1)
 		{
@@ -955,6 +952,11 @@ int main(int argc, char * argv[])
 		//Initialize packets as well as fields for packet
     		clientPacketData* packet=malloc(sizeof(clientPacketData));
     		strcpy(packet->ipAddress,currentBuffer);
+
+
+            //ANDREA'S EXPERIMENTAL CODE
+            packet -> sock = fdopen(dup(serverFileDescriptor), "rw");
+
     		packet->clientFileDescriptor=serverFileDescriptor;
 		    int filemode=0;
     		int modemsg=0;

@@ -57,44 +57,50 @@ int do_getattr(const char* path, struct stat* st){
 	int sockDescriptor=-1;
 	//Establish a connection for the NetGetattr requested
     sockDescriptor=connectionForClientRequests(sockDescriptor);
+
     printf("Netgetattr: Connected to %s\n", ipAddressArray);
 	//For Thread synchronization
-	
 	
 	int netreadMessage=htonl(NETGETATTR);
 	//send data to server side with message being NetRead
     if(send(sockDescriptor,&netreadMessage,sizeof(int),0)==-1){
-        perror("NetRead request fails");
+        perror("getattr failed to send request type to server => ");
+    }else{
+        printf("getattr sent request type to server\n");
     }
-	
-	printf("NetGetattr: Sending Path.\n");
-    if(send(sockDescriptor,path,strlen(path),0)==-1){
-        perror("ERROR: NetGetattr request could not send path!\n");
-    }
+
+    //ANDREA'S EXPERIMENTAL CODE
+    FILE * sockStream = fdopen(dup(sockDescriptor), "rw");
+
+	//send path
+    //if(send(sockDescriptor,path,strlen(path),0)==-1){
+    fwrite(path, strlen(path)+1, 1, sockStream);
+    perror("getattr sent path to server =>");
+
     
 	int result=0;
     int resultMessage=0;
-    if((resultMessage=recv(sockDescriptor,&result,sizeof(result),0))==-1){
-        perror("ERROR: NetGetattr request could not read receive the results");
-    }
+    //if((resultMessage=recv(sockDescriptor,&result,sizeof(result),0))==-1){
+    fread(&result, sizeof(int), 1, sockStream);
+    perror("netgetattr reads result message =>");
 	
 	//Check for possible errors from NetGetattr requests
     if(result==-1){
         int errorMessage=0;
-        if((resultMessage=recv(sockDescriptor,&errorMessage,sizeof(errorMessage),0))==-1){
-            perror("NetGetattr requests receives an error");
-        }
+        //if((resultMessage=recv(sockDescriptor,&errorMessage,sizeof(errorMessage),0))==-1){
+        fread(&errorMessage, sizeof(int), 1, sockStream);
+        perror("getattr recieves err msg from server => ");
         errno=errorMessage;
-        //set the value of errno
-        printf("Errno Is: %s\n",strerror(errno));
+        perror("getattr: the err message from server is => "); 
     }else{
         //char resultString[MAXBUFFERSIZE];
-        if(recv(sockDescriptor,st,sizeof(struct stat),0)==-1){
-            perror("NetGetattr requests receives error from server");
-        }
+        //if(recv(sockDescriptor,st,sizeof(struct stat),0)==-1){
+        fread(st, sizeof(struct stat), 1, sockStream);
+        perror("getattr recieves a struct stat from server =>");
     }
 	
     close(sockDescriptor);
+    fclose(sockStream);
 	return result;
 }
 

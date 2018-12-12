@@ -38,6 +38,7 @@ typedef struct packet
   int serverFileDescriptor; //file descriptor used on the server side
   int modeFlags; //this is associated with O_RD, O_WR,O_RDONLY, etc
   char* fileName;
+  FILE* sock;
 } clientPacketData;
 
 /*
