@@ -611,7 +611,7 @@ int main(int argc, char* argv[]){
     }
 
     struct fuse_operations* fops = (struct fuse_operations*)malloc(sizeof(struct fuse_operations));
-    //fops -> getattr = do_getattr;
+    fops -> getattr = do_getattr;
     fops -> mkdir = do_mkdir;
     fops -> create = do_create;
     fops -> open = do_open;

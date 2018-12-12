@@ -28,6 +28,7 @@ int netclose(int fd);
 #define NETREADDIR 11
 #define NETRELEASEDIR 12
 #define NETMKDIR 13
+#define MOUNTPATH "/tmp/OSFake"
 
 typedef struct packet
 {  

@@ -1,4 +1,10 @@
 Reviewing If Address Info Is Valid For: facade.cs.rutgers.edu
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.103
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.103
+NetGetattr: Sending Path.
 openDiredi -> path is /
 readdir: Connected to 2.0.43.103
 readdir: Sending File Mode
@@ -15,4 +21,82 @@ result from tokenizng buffer:
 ---..
 ---ass1.txt
 ---ass2.txt
----releaseDired
+---fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.103
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.103
+NetGetattr: Sending Path.
+releaseDired
+openDiredi -> path is /
+readdir: Connected to 2.0.43.103
+readdir: Sending File Mode
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 23
+recieved from server=> .
+..
+ass1.txt
+ass2.txt
+
+result from tokenizng buffer:
+.
+---..
+---ass1.txt
+---ass2.txt
+---fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.103
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.103
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.103
+NetGetattr: Sending Path.
+releaseDired
+openDiredi -> path is /
+readdir: Connected to 2.0.43.103
+readdir: Sending File Mode
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 23
+recieved from server=> .
+..
+ass1.txt
+ass2.txt
+
+result from tokenizng buffer:
+.
+---..
+---ass1.txt
+---ass2.txt
+---fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.103
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.103
+NetGetattr: Sending Path.
+releaseDired
+openDiredi -> path is /
+readdir: Connected to 2.0.43.103
+readdir: Sending File Mode
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 23
+recieved from server=> .
+..
+ass1.txt
+ass2.txt
+
+result from tokenizng buffer:
+.
+---..
+---ass1.txt
+---ass2.txt
+---fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.103
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.103
+NetGetattr: Sending Path.
+releaseDired
