@@ -15,6 +15,7 @@
 #include "libnetfiles.h"
 #include <pthread.h>
 #include <stdbool.h>
+#include <dirent.h>
 
 //Initialize an array of file descriptors of all to 0, our fdArray is 512
 int fdArray[512]={0};
@@ -312,7 +313,7 @@ clientPacketData* handleReadRequest(clientPacketData* packet, char buffer[MAXBUF
 	//convert into 32-bit integer host byte order
 	off_t numBytesToBeOffset =ntohl(offsetBytesReceived);
       	printf("NetRead: Received offset: %d\n", numBytesToBeOffset);
-	sleep(1);
+	
 	//if the file descriptor is -1 
 	//then bad file descriptor
       	if(readfd==-1)
@@ -481,7 +482,7 @@ clientPacketData* handleWriteRequest(clientPacketData* packet, char buffer[MAXBU
 	//set the last character to a null terminating character
       	buffer[stringMessage]='\0';
       	printf("NetWrite: Received string: %s\n", buffer);
-      	sleep(1);
+      	
 	
 	off_t offsetBytesReceived;
 	int messageBit;
@@ -493,7 +494,7 @@ clientPacketData* handleWriteRequest(clientPacketData* packet, char buffer[MAXBU
 	//convert into 32-bit integer host byte order
 	off_t numBytesToBeOffset =ntohl(offsetBytesReceived);
       	printf("NetWrite: Received offset: %d\n", numBytesToBeOffset);
-	sleep(1);
+	
 
 
 pthread_mutex_lock(&userListMutex);
@@ -550,7 +551,7 @@ clientPacketData* handleCloseRequest(clientPacketData* packet, char buffer[MAXBU
 	else //potential fd to close
 	{
 		fdClose=fdClose*-1;
-		sleep(1);
+		
 		int closed=close(fdClose);
 		int closedFD=htonl(closed);
 		pthread_mutex_lock(&userListMutex);
@@ -678,44 +679,82 @@ clientPacketData* handleMkdirRequest(clientPacketData* packet, char buffer[MAXBU
 
 clientPacketData* handleReaddirRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
 
-    char* msgReciever = (char*)malloc(sizeof(char) * 100);
+    int msgReciever = 0;
     int offsetReciever = 0;
-    if((fdMessage=recv(packet->clientFileDescriptor, &msgReceiver,sizeof(msgReceiver),0))==-1){
+    if((msgReciever =recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){
         	perror("ERROR: Netread request could not receive the directory name");
     }else{
         printf("readdir recieved directory name\n");
     }
 
-    if((fdMessage=recv(packet->clientFileDescriptor, &offsetReciever,sizeof(offsetReceiver),0))==-1){
+    if((offsetReciever=recv(packet->clientFileDescriptor, &offsetReciever,sizeof(offsetReciever),0))==-1){
         	perror("ERROR: Netread request could not receive the offset");
     }else{
-        printf("readdir recieved offset")
+        printf("readdir recieved offset");
     }
 
     //run readdir and send back the result
-    
-    char *strcat(char *dest, const char *src)
-    newPath = (char*)malloc(sizeof(char) * 100);
+    char* newPath = (char*)malloc(sizeof(char) * 100);
     strcpy(newPath, "/tmp/OSFake");
-    strcat(newPath, msgReciever);
+   
+    //I HOPE THIS TRUNCATES BUFFER?
+    strcat(newPath, buffer);
+    
+    DIR* dirp = opendir(newPath);
+    struct dirent* readDirRes;
 
-    struct dirent* readDirRes = readdir(newPath);
+    //memset buffer
+    memset(buffer, '\0', MAXBUFFERSIZE);
+    readDirRes = readdir(dirp);
+    while(readDirRes){
+        strcat(buffer, readDirRes -> d_name);
+        printf("%s\n", readDirRes -> d_name);
+        strcat(buffer, "\n");
+        readDirRes = readdir(dirp);
+    }
 
-
-
+    printf("buffer is => %s\n", buffer);
+    
+    //send size of buffer back to the client
+      //if(send(packet->clientFileDescriptor, buffer,sizeof(buffer),0)==-1)
+    int bufferLen = strlen(buffer);
+    if(send(packet->clientFileDescriptor, &bufferLen,sizeof(int),0)==-1){
+       	 perror("ERROR: NetRead request has an issue in sending size result!");
+    }
+      
+	//check whether or not the output buffer is equal to the null terminating character
+	if(strcmp(buffer,"\0")==0){
+		printf("NetRead: Sending buffer: %s\n", buffer);
+	    	if(send(packet->clientFileDescriptor,buffer,bufferLen,0)==-1){
+			    perror("ERROR: NetRead request broke while sending the buffer back to the client");
+          	}
+        
+    }else{
+        /*
+		printf("NetRead request sending buffer: %s\n", buffer);
+	    if(send(packet->clientFileDescriptor,buffer,currentBitsReadInFlag,0)==-1){
+			perror("ERROR: NetRead request broke while sending the buffer back to the client");
+        }else{
+        */
+	    printf("NetRead: Sending buffer: %s\n", buffer);
+        if(send(packet->clientFileDescriptor,buffer,bufferLen,0)==-1){
+		    perror("ERROR: NetRead request broke while sending the buffer back to the client");
+        }
+    }
+    return packet;
 }
+
+
 
 clientPacketData* handleGetattrRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
 
-	struct stat* temp;
-	
+	struct stat* temp;	
 	int validPath=0;
-      	if((validPath=recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1)
-	{ 
-		//getting file name to open
-        	perror("NetGetattr: Could not receive path");
-        	exit(1);
-      	}
+    if((validPath=recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){ 
+	//getting file name to open
+        perror("NetGetattr: Could not receive path");
+        exit(1);
+    }
 	buffer[validPath]='\0';
 	//If valid path them simply print the path to the file
       	printf("NetGetattr: Received path: %s\n", buffer);
@@ -749,36 +788,6 @@ clientPacketData* handleGetattrRequest(clientPacketData* packet, char buffer[MAX
 	        }
 	}
 	return packet;
-
-}
-
-
-clientPacketData* handleReaddirRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
-
-    char* msgReciever = (char*)malloc(sizeof(char) * 100);
-    int offsetReciever = 0;
-    if((fdMessage=recv(packet->clientFileDescriptor, &msgReceiver,sizeof(msgReceiver),0))==-1){
-        	perror("ERROR: Netread request could not receive the directory name");
-    }else{
-        printf("readdir recieved directory name\n");
-    }
-
-    if((fdMessage=recv(packet->clientFileDescriptor, &offsetReciever,sizeof(offsetReceiver),0))==-1){
-        	perror("ERROR: Netread request could not receive the offset");
-    }else{
-        printf("readdir recieved offset")
-    }
-
-    //run readdir and send back the result
-    
-    char *strcat(char *dest, const char *src)
-    newPath = (char*)malloc(sizeof(char) * 100);
-    strcpy(newPath, "/tmp/OSFake");
-    strcat(newPath, msgReciever);
-
-    struct dirent* readDirRes = readdir(newPath);
-
-
 
 }
 

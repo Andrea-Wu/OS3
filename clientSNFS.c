@@ -16,7 +16,22 @@
 struct addrinfo clientSideData;
 struct addrinfo* serverSideData;
 char ipAddressArray[INET_ADDRSTRLEN];
+/*
+void loggingFnStrAndrea(char* string){
+    //this is shit and it only writes a string
+    //make a copy of this that also writes ints
+    FILE* fp = fopen("/ilab/users/ayw19/Workspace/OS3/", "a");
+    fprintf(fp,"%s\n", string);
+    fclose(fp);
+}
 
+
+void loggingFnIntAndrea(int myInt){
+    FILE* fp = fopen("/ilab/users/ayw19/Workspace/OS3/", "a");
+    fprintf(fp,"%d\n", myInt);
+    fclose(fp);
+}
+*/
 //connection method that is used for all the net file methods
 int connectionForClientRequests(int socketDescript)
 {
@@ -35,7 +50,7 @@ int connectionForClientRequests(int socketDescript)
 }
 
 
-int do_getattr(const char* path, struct stat* st, struct fuse_file_info* ffi){
+int do_getattr(const char* path, struct stat* st){
 
         printf("fuse intercepts getattr\n");
 	int sockDescriptor=-1;
@@ -43,7 +58,7 @@ int do_getattr(const char* path, struct stat* st, struct fuse_file_info* ffi){
     	sockDescriptor=connectionForClientRequests(sockDescriptor);
     	printf("Netgetattr: Connected to %s\n", ipAddressArray);
 	//For Thread synchronization
-	sleep(1);
+	
 	
 	int netreadMessage=htonl(NETGETATTR);
 	//send data to server side with message being NetRead
@@ -51,18 +66,13 @@ int do_getattr(const char* path, struct stat* st, struct fuse_file_info* ffi){
 	{
         	perror("NetRead request fails");
     	}
-	sleep(1);
+	
 	printf("NetGetattr: Sending Path.\n");
         if(send(sockDescriptor,path,strlen(path),0)==-1)
         {
                 perror("ERROR: NetGetattr request could not send path!\n");
         }
-        sleep(1);
-
-	
-
-
-/////////////////////
+        
 	int result=0;
     	int resultMessage=0;
     	if((resultMessage=recv(sockDescriptor,&result,sizeof(result),0))==-1)
@@ -100,30 +110,30 @@ int do_getattr(const char* path, struct stat* st, struct fuse_file_info* ffi){
 int do_create(const char * path, mode_t mode, struct fuse_file_info * ffi){
     printf("fuse intercepts create\n");
 	
-	int socketDescriptor=-1;
+	int sockDescriptor=-1;
 	//estbalish a connection for the following socket descriptor
-    	socketDescriptor=connectionForClientRequests(socketDescriptor);
+    	sockDescriptor=connectionForClientRequests(sockDescriptor);
     	printf("NetCreate: Connected to %s\n",ipAddressArray);
-   	sleep(1);
+   	
     	/***Make a seperate method for sending pathname and flags from the code below!***/
 	printf("NetCreate: Sending File Mode.\n");
 	
 	int createRequest=htonl(NETOPEN);
-        if(send(socketDescriptor,&createRequest,sizeof(createRequest),0)==-1)
+        if(send(sockDescriptor,&createRequest,sizeof(createRequest),0)==-1)
         {
                 perror("ERROR: NetCreate request could not read the message!\n");
         }
-        sleep(1);
+        
 	printf("NetCreate: Sending Path.\n");
-        if(send(socketDescriptor,path,strlen(path),0)==-1)
+        if(send(sockDescriptor,path,strlen(path),0)==-1)
         {
                 perror("ERROR: NetCreate request could not send path!\n");
         }
-        sleep(1);
+        
 	//sending flags to server side to handle client requests
         printf("NetCreate: Sending Flags\n");
         int flagsForRequest=htonl(mode);
-        if(send(socketDescriptor,&flagsForRequest,sizeof(flagsForRequest),0)==-1)
+        if(send(sockDescriptor,&flagsForRequest,sizeof(flagsForRequest),0)==-1)
         {
                 perror("ERROR: NetCreate request could not send flags to server!");
         }
@@ -131,7 +141,7 @@ int do_create(const char * path, mode_t mode, struct fuse_file_info * ffi){
         int resultFileDescriptor=0;
         int resultMessageFromServer=0;
 	//Receiving data back from the server side, check whether or not server side returns an error
-        if((resultMessageFromServer=recv(socketDescriptor,&resultFileDescriptor,sizeof(resultFileDescriptor),0))==-1)
+        if((resultMessageFromServer=recv(sockDescriptor,&resultFileDescriptor,sizeof(resultFileDescriptor),0))==-1)
         {
                 perror("ERROR: NetCreate request could not receive result from server!\n");
                 exit(-1);
@@ -143,7 +153,7 @@ int do_create(const char * path, mode_t mode, struct fuse_file_info * ffi){
 	if(resultFromServer==-1)
         {
 		//NetCreate fails to receive errno from server
-                if((resultFromServer=recv(socketDescriptor,&errorTypeMessage,sizeof(errorTypeMessage),0))==-1)
+                if((resultFromServer=recv(sockDescriptor,&errorTypeMessage,sizeof(errorTypeMessage),0))==-1)
                 {
                          perror("ERROR: NetCreate request does not receive errno!\n");
                 }
@@ -160,7 +170,7 @@ int do_create(const char * path, mode_t mode, struct fuse_file_info * ffi){
                 }
         }
 	//close the socket
-        close(socketDescriptor);
+        close(sockDescriptor);
 	//return the result
         
 	ffi->fh = resultFromServer;
@@ -176,7 +186,7 @@ int do_open(const char * path , struct fuse_file_info * ffi){
 	//estbalish a connection for the following socket descriptor
     	sockDescriptor=connectionForClientRequests(sockDescriptor);
     	printf("NetOpen: Connected to %s\n",ipAddressArray);
-   	sleep(1);
+   	
     	/***Make a seperate method for sending pathname and flags from the code below!***/
 	printf("NetOpen: Sending File Mode.\n");
 	int netOpenRequestResults=0;
@@ -188,24 +198,24 @@ int do_open(const char * path , struct fuse_file_info * ffi){
     	return 0;
 }
 
-int handleNetOpenRequests(int socketDescriptor,const char* pathname,int flags)
+int handleNetOpenRequests(int sockDescriptor,const char* pathname,int flags)
 {
         int openRequest=htonl(NETOPEN);
-        if(send(socketDescriptor,&openRequest,sizeof(openRequest),0)==-1)
+        if(send(sockDescriptor,&openRequest,sizeof(openRequest),0)==-1)
         {
                 perror("ERROR: NetOpen request could not read the message!\n");
         }
-        sleep(1);
+        
 	printf("NetOpen: Sending Path.\n");
-        if(send(socketDescriptor,pathname,strlen(pathname),0)==-1)
+        if(send(sockDescriptor,pathname,strlen(pathname),0)==-1)
         {
                 perror("ERROR: NetOpen request could not send path!\n");
         }
-        sleep(1);
+        
 	//sending flags to server side to handle client requests
         printf("NetOpen: Sending Flags\n");
         int flagsForRequest=htonl(flags);
-        if(send(socketDescriptor,&flagsForRequest,sizeof(flagsForRequest),0)==-1)
+        if(send(sockDescriptor,&flagsForRequest,sizeof(flagsForRequest),0)==-1)
         {
                 perror("ERROR: NetOpen request could not send flags to server!");
         }
@@ -213,7 +223,7 @@ int handleNetOpenRequests(int socketDescriptor,const char* pathname,int flags)
         int resultFileDescriptor=0;
         int resultMessageFromServer=0;
 	//Receiving data back from the server side, check whether or not server side returns an error
-        if((resultMessageFromServer=recv(socketDescriptor,&resultFileDescriptor,sizeof(resultFileDescriptor),0))==-1)
+        if((resultMessageFromServer=recv(sockDescriptor,&resultFileDescriptor,sizeof(resultFileDescriptor),0))==-1)
         {
                 perror("ERROR: NetOpen request could not receive result from server!\n");
                 exit(-1);
@@ -225,7 +235,7 @@ int handleNetOpenRequests(int socketDescriptor,const char* pathname,int flags)
 	if(resultFromServer==-1)
         {
 		//NetOpen fails to receive errno from server
-                if((resultFromServer=recv(socketDescriptor,&errorTypeMessage,sizeof(errorTypeMessage),0))==-1)
+                if((resultFromServer=recv(sockDescriptor,&errorTypeMessage,sizeof(errorTypeMessage),0))==-1)
                 {
                          perror("ERROR: NetOpen request does not receive errno!\n");
                 }
@@ -242,7 +252,7 @@ int handleNetOpenRequests(int socketDescriptor,const char* pathname,int flags)
                 }
         }
 	//close the socket
-        close(socketDescriptor);
+        close(sockDescriptor);
 	//return the result
         if(resultFromServer==-1)
         {
@@ -259,7 +269,7 @@ int do_read(const char* path, char* buf, size_t size, off_t offset, struct fuse_
     	sockDescriptor=connectionForClientRequests(sockDescriptor);
     	printf("Netread: Connected to %s\n", ipAddressArray);
 	//For Thread synchronization
-	sleep(1);
+	
 	printf("NetRead: Sending File Mode\n");
 	
 /*
@@ -269,7 +279,7 @@ int do_read(const char* path, char* buf, size_t size, off_t offset, struct fuse_
 	{
         	perror("NetOpen request fails");
     	}
-	sleep(1);
+	
 */
     	int netreadMessage=htonl(NETREAD);
 	//send data to server side with message being NetRead
@@ -278,7 +288,7 @@ int do_read(const char* path, char* buf, size_t size, off_t offset, struct fuse_
         	perror("NetRead request fails");
     	}
 
-    	sleep(1);
+    	
 	printf("NetRead: Sending File Descriptor.\n");
     	int filedescriptorNetReadRequest=htonl(ffi->fh);
 	//sending over the file descriptor to the server side in order to read the file
@@ -286,7 +296,7 @@ int do_read(const char* path, char* buf, size_t size, off_t offset, struct fuse_
 	{
         	perror("NetRead request fails");
     	}
-	sleep(1);
+	
     	int sizeToRead=htonl(size);
     	if(send(sockDescriptor,&sizeToRead,sizeof(int),0)==-1)
 	{
@@ -339,45 +349,45 @@ int do_write(const char * path, const char * string, size_t size, off_t offset ,
     //i think the 1st string is the path 
     //printf("writed => path is %s, string is %s, size is %d, offset is %d\n", path,string,size,offset);
     
-	int socketDescriptor=-1;
+	int sockDescriptor=-1;
 	//establish a connection for the NetWrite Requst
-    	socketDescriptor=connectionForClientRequests(socketDescriptor);
+    	sockDescriptor=connectionForClientRequests(sockDescriptor);
     	printf("netwrite: Connected to %s\n",ipAddressArray);
-	sleep(1);
+	
 	//convert to a 32-bit integer host byte order and send to server
     	int netRequest=htonl(NETWRITE);
-    	if(send(socketDescriptor,&netRequest,sizeof(int),0)==-1)
+    	if(send(sockDescriptor,&netRequest,sizeof(int),0)==-1)
 	{
         	perror("ERROR: NetWrite request fails to send message to server!\n");
     	}
-	sleep(1);
+	
 	printf("NetWrite request sending over file descriptor to server\n");
     	int filedescriptorWriteRequest=htonl(ffi->fh);
 	//Sending over the data to the client
-    	if(send(socketDescriptor,&filedescriptorWriteRequest,sizeof(int),0)==-1)
+    	if(send(sockDescriptor,&filedescriptorWriteRequest,sizeof(int),0)==-1)
 	{
         	perror("ERROR: NetWrite request fails to send over the file descriptor to the server!\n");
     	}
 
-    	sleep(1);
+    	
 	//sending byte size to the client
     	//printf("netwrite: Sending nbyte to Server: %d\n", size);
     	int sizeOfRequest=htonl(size);
-    	if(send(socketDescriptor,&sizeOfRequest,sizeof(int),0)==-1)
+    	if(send(sockDescriptor,&sizeOfRequest,sizeof(int),0)==-1)
 	{
         	perror("ERROR: NetWrite request fails to send over the bytes to the server!\n");
     	}
-	sleep(1);
+	
 	//Send String to the client 
     	//printf("netwrite: Sending String.\n");
-    	if(send(socketDescriptor,string,strlen(string),0)==-1)
+    	if(send(sockDescriptor,string,strlen(string),0)==-1)
 	{
         	perror("ERROR: NetWrite request fails to send over string message to the server!\n");
     	}
-	sleep(1);
+	
 	//Send offset to the client 
     	int offsetOfRequest=htonl(offset);
-    	if(send(socketDescriptor,&offsetOfRequest,sizeof(int),0)==-1)
+    	if(send(sockDescriptor,&offsetOfRequest,sizeof(int),0)==-1)
 	{
         	perror("ERROR: NetWrite request fails to send over string message to the server!\n");
     	}
@@ -385,7 +395,7 @@ int do_write(const char * path, const char * string, size_t size, off_t offset ,
 
     	int resultSize=0;
     	int resultMessage=0;
-    	if((resultMessage=recv(socketDescriptor,&resultSize,sizeof(resultSize),0))==-1)
+    	if((resultMessage=recv(sockDescriptor,&resultSize,sizeof(resultSize),0))==-1)
 	{
         	perror("ERROR: NetWrite request could not receive results from the server!\n");
     	}
@@ -396,7 +406,7 @@ int do_write(const char * path, const char * string, size_t size, off_t offset ,
     	if(result==-1)
 	{
         	int errorResult;
-		if((resultMessage=recv(socketDescriptor,&errorResult,sizeof(errorResult),0))==-1)
+		if((resultMessage=recv(sockDescriptor,&errorResult,sizeof(errorResult),0))==-1)
 		{
             		perror("netwrite received an error!");
         	}
@@ -404,7 +414,7 @@ int do_write(const char * path, const char * string, size_t size, off_t offset ,
 		perror("NetWrite request received errno!\n");
 	}
 	//close the scoket descriptor
-    	close(socketDescriptor);
+    	close(sockDescriptor);
     	return result;
 
 }
@@ -434,37 +444,27 @@ int do_opendir(const char * path, struct fuse_file_info * ffi){
 }
 
 //readdir
-int do_readdir(const char * path, void * idk, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info * ffi){
-    	int sockDescriptor=-1;
+int do_readdir(const char * path, void * buffer, fuse_fill_dir_t filler, off_t offset, struct fuse_file_info * ffi){
+    int sockDescriptor=-1;
 	//Establish a connection for the NetRead requested
-    	sockDescriptor=connectionForClientRequests(sockDescriptor);
-    	printf("readdir: Connected to %s\n", ipAddressArray);
+    sockDescriptor=connectionForClientRequests(sockDescriptor);
+    printf("readdir: Connected to %s\n", ipAddressArray);
 	//For Thread synchronization
-	sleep(1);
+	
 	printf("readdir: Sending File Mode\n");
 	
-/*
-	int messageOpenRequest=htonl(NETOPEN);
-	//send data to server side with the message being NetOpen, since we must open the file before we read it
-	if(send(sockDescriptor,&messageOpenRequest,sizeof(messageOpenRequest),0)==-1)
-	{
-        	perror("NetOpen request fails");
-    	}
-	sleep(1);
-*/
     	int netreadMessage=htonl(NETREADDIR);
 	//send data to server side with message being NetRead
     	if(send(sockDescriptor,&netreadMessage,sizeof(int),0)==-1){
         	perror("ReadDir request fails");
     	}
 
-    	sleep(1);
-	    printf("ReadDir: Sending Directory path name\n");
-    	//Send String to the client 
-    	//printf("netwrite: Sending String.\n");
-    	if(send(socketDescriptor,path,strlen(path),0)==-1){
-        	perror("ERROR: NetWrite request fails to send over string message to the server!\n");
-    	}
+    	
+	printf("ReadDir: Sending Directory path name\n");
+    //Send String to the client 
+    if(send(sockDescriptor,path,strlen(path),0)==-1){
+        perror("ERROR: NetWrite request fails to send over string message to the server!\n");
+    }
     
 	
 	int offset_to_read = htonl(offset);
@@ -473,38 +473,60 @@ int do_readdir(const char * path, void * idk, fuse_fill_dir_t filler, off_t offs
 	}
 
 	//Here we set up to receive the result from the server
-	printf("NetRead: waiting to receive result\n");
-    	int resultSize=0;
-    	int resultMessage=0;
-    	if((resultMessage=recv(sockDescriptor,&resultSize,sizeof(resultSize),0))==-1)
-	{
-        	perror("ERROR: NetRead request could not read receive the results");
-    	}
+	printf("NetReaddir: waiting to receive result\n");
+    int resultSize=0;
+    int resultMessage=0;
+    if((resultMessage=recv(sockDescriptor,&resultSize,sizeof(resultSize),0))==-1){
+        perror("ERROR: NetReaddir request could not receive result size");
+    }else{
+        printf("NetReaddir: Received result size: %d\n", resultSize);
+    }
 	int result=resultSize;
-    	printf("NetRead: Received result size: %d\n", result);
-	//Check for possible errors from NetRead requests
-    	if(result==-1)
-	{
+//DECLARE BUF
+
+/*You insert an entry into buf (the same buffer that is passed to readdir()) by calling filler() with the filename and optionally a pointer to a struct stat containing the file type.
+
+bb_readdir() uses filler() in as simple a way as possible to just copy the underlying directory's filenames into the mounted directory. Notice that the offset passed to bb_readdir() is ignored, and an offset of 0 is passed to filler(). This tells filler() to manage the offsets into the directory structure for itself. Here's the code:
+*/
+     //   char* buf = (char*)malloc(sizeof(char) * MAXBUFFERSIZE);
+    
+	    //Check for possible errors from NetRead requests
+    	if(result==-1){
         	int errorMessage=0;
-		if((resultMessage=recv(sockDescriptor,&errorMessage,sizeof(errorMessage),0))==-1)
-		{
-            		perror("NetRead requests receives an error");
-        	}
-		errno=errorMessage;
-		//set the value of errno
+		    if((resultMessage=recv(sockDescriptor,&errorMessage,sizeof(errorMessage),0))==-1){
+                perror("NetRead requests receives an error");
+            }
+		    errno=errorMessage;
+		    //set the value of errno
         	printf("Errno Is: %s\n",strerror(errno));
+    	}else{
+        	char buf[MAXBUFFERSIZE];
+        	if(recv(sockDescriptor,buf,resultSize,0)==-1){
+            	perror("NetRead requests receives error from server");
+        	}else{
+                printf("recieved from server=> %s\n", buf);
+
+                //account for undefined behavior when resultSize < 25
+                    //tokenize buf and put every string into filler
+                printf("result from tokenizng buffer:\n");
+                char* token = strtok(buf, "\n");
+                while(token){
+                    printf("%s\n", token);
+                    filler(buffer, token, NULL, 0);
+                    token = strtok(NULL, "\n");
+                    printf("---");
+                }
+
+            }
+
+
     	}
-    	else
-	{
-        	//char resultString[MAXBUFFERSIZE];
-        	if(recv(sockDescriptor,buf,size,0)==-1)
-		{
-            		perror("NetRead requests receives error from server");
-        	}
-    	}
-	
+        perror("what the shit is happening i dont?\n");
+        //AFTER READING RESULT, parse result and use the "filler" function
+
+	    
     	close(sockDescriptor);
-    	return result;
+    	return 0;
 
 
 }
@@ -519,34 +541,34 @@ int do_releasedir(const char * path, struct fuse_file_info * ffi){
 int do_mkdir(const char * path, mode_t mode){
     printf("mkdired\n");
 
-	int socketDescriptor=-1;
+	int sockDescriptor=-1;
 	//establish a connection for the NetWrite Requst
-    	socketDescriptor=connectionForClientRequests(socketDescriptor);
+    	sockDescriptor=connectionForClientRequests(sockDescriptor);
     	printf("netmkdir: Connected to %s\n",ipAddressArray);
-	sleep(1);
+	
 	//convert to a 32-bit integer host byte order and send to server
     	int netRequest=htonl(NETMKDIR);
-    	if(send(socketDescriptor,&netRequest,sizeof(int),0)==-1)
+    	if(send(sockDescriptor,&netRequest,sizeof(int),0)==-1)
 	{
         	perror("ERROR: NetMkdir request fails to send message to server!\n");
     	}
-	sleep(1);
+	
 	//Send path to the client 
-    	if(send(socketDescriptor,path,strlen(path),0)==-1)
+    	if(send(sockDescriptor,path,strlen(path),0)==-1)
 	{
         	perror("ERROR: NetMkdir request fails to send over string message to the server!\n");
     	}
-	sleep(1);
+	
 	int modeOfRequest=htonl(mode);
-    	if(send(socketDescriptor,&modeOfRequest,sizeof(int),0)==-1)
+    	if(send(sockDescriptor,&modeOfRequest,sizeof(int),0)==-1)
 	{
         	perror("ERROR: NetMkdir request fails to send over the bytes to the server!\n");
     	}
-	sleep(1);
+	
 	
 	int resultSize=0;
     	int resultMessage=0;
-    	if((resultMessage=recv(socketDescriptor,&resultSize,sizeof(resultSize),0))==-1)
+    	if((resultMessage=recv(sockDescriptor,&resultSize,sizeof(resultSize),0))==-1)
 	{
         	perror("ERROR: NetMkdir request could not receive results from the server!\n");
     	}
@@ -556,7 +578,7 @@ int do_mkdir(const char * path, mode_t mode){
     	if(result==-1)
 	{
         	int errorResult;
-		if((resultMessage=recv(socketDescriptor,&errorResult,sizeof(errorResult),0))==-1)
+		if((resultMessage=recv(sockDescriptor,&errorResult,sizeof(errorResult),0))==-1)
 		{
             		perror("netmkdir received an error!");
         	}
@@ -564,7 +586,7 @@ int do_mkdir(const char * path, mode_t mode){
 		perror("NetMkdir request received errno!\n");
 	}
 	//close the scoket descriptor
-    	close(socketDescriptor);
+    	close(sockDescriptor);
 
     return 0;
 }
@@ -588,7 +610,7 @@ int main(int argc, char* argv[]){
     }
 
     struct fuse_operations* fops = (struct fuse_operations*)malloc(sizeof(struct fuse_operations));
-    fops -> getattr = do_getattr;
+    //fops -> getattr = do_getattr;
     fops -> mkdir = do_mkdir;
     fops -> create = do_create;
     fops -> open = do_open;

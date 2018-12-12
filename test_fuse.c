@@ -7,6 +7,10 @@
 
 int main(){
 
+
+    readdir(opendir("/tmp/fuse"));
+    perror("readdir err: ");
+/*
 //    int aaa = open("/tmp/fuse/what_is_this??.txt", O_RDWR);
 //    printf("not open success %d\n", aaa);
     printf("%d\n",creat("/tmp/fuse/bob.txt", O_WRONLY));
@@ -23,4 +27,5 @@ int main(){
    //printf("did a write: code %d\n",write(4, "fuck", 100));
    //perror("bbbb");
     return 0;
+    */
 }
