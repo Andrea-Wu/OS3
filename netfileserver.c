@@ -267,174 +267,63 @@ clientPacketData* handleCreateRequest(clientPacketData* packet,char buffer[MAXBU
 
 
 //From using the file descriptor above in the open method above we read how many bytes the client want into their buffer.
-clientPacketData* handleReadRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber)
-{
+clientPacketData* handleReadRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
+    int msgReciever = 0;
+    int offsetReciever = 0;
+    if((msgReciever =recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){
+        	perror("ERROR: read request could not receive the directory name");
+    }else{
+        printf("read recieved directory name\n");
+    }
 
-      	int fdReceiver=0;
-      	int fdMessage=0;
-	//Check the data received from the NetRead request and see whether or not is wable to receive the message by checking to see if recv returns -1
-	if((fdMessage=recv(packet->clientFileDescriptor, &fdReceiver,sizeof(fdReceiver),0))==-1){
-        	perror("ERROR: Netread request could not receive the message");
-      	}
-	int readfd=0;
-	//convert into 32-bit integer host byte order
-      	readfd=ntohl(fdReceiver);
-      	printf("NetRead: Received File Descriptor: %d\n",readfd);
-	//check if the read file descriptor is equal to -1, if so then a error occured!
-      	if(readfd==-1)
-	{
-		readfd=-1;
-      	}
-	//otherwise valid file descriptor 
-	//send client back negative version of the server side file descriptor
-      	else if(readfd<0)
-	{
-		printf("The read file descriptor is: %d\n", readfd);
-        	readfd=readfd*-1;
-      	}
-      	size_t currentBytesReceived;
-      	int messageBit;
-	//check the data received from the NetRead request from client and see whether or not it returns -1, if so print error message
-	if((messageBit=recv(packet->clientFileDescriptor,&currentBytesReceived,sizeof(currentBytesReceived),0))==-1)
-	{
-       		perror("ERROR: Netread request could not receive any number of bytes from client");
-      	}
-	//convert into 32-bit integer host byte order
-	size_t numBytesToBeRead=ntohl(currentBytesReceived);
-      	printf("NetRead: Received nbytes that are to be read: %d\n", numBytesToBeRead);
-      	
-	off_t offsetBytesReceived;
-	//check the data received from the NetRead request from client and see whether or not it returns -1, if so print error message
-	if((messageBit=recv(packet->clientFileDescriptor,&offsetBytesReceived,sizeof(offsetBytesReceived),0))==-1)
-	{
-       		perror("ERROR: Netread request could not receive any number of bytes from client");
-      	}
-	//convert into 32-bit integer host byte order
-	off_t numBytesToBeOffset =ntohl(offsetBytesReceived);
-      	printf("NetRead: Received offset: %d\n", numBytesToBeOffset);
-	
-	//if the file descriptor is -1 
-	//then bad file descriptor
-      	if(readfd==-1)
-	{
-		//set bytes to be read to -1
-		//send data packet to the client side and print error message if failed to send back to client
-		int bytesReadResult=-1;
-        	if(send(packet->clientFileDescriptor,&bytesReadResult,sizeof(bytesReadResult),0)==-1)
-		{
-			perror("ERROR: Netread request has an issue with sending result!");
-        	}
-        	//send errno, with 9 indicating this is a bad file number
-		errno=9;
-        	printf("NetRead: Sending errno :%d\n", errno);
-		//set the errorNumber to be equal to errno
-        	errorNumber=errno;
-		//send data back to the client side
-        	if(send(packet->clientFileDescriptor,&errorNumber,sizeof(errorNumber),0)==-1)
-		{
-          		perror("NetRead: was not able to send errno");
-        	}
-        	return packet;
-	}
-	//now send over the buffer that was currently read in back to the client side
-	char outputBuffer[MAXBUFFERSIZE];
-	//first bzero out the buffer
-      	bzero(buffer, MAXBUFFERSIZE);
-	
-      	int readResult=0;
-      	int currentBitsReadInFlag=0;
-      	int currentByesResult=0;
-      	pthread_mutex_lock(&userListMutex);
-////////New for offset
-	lseek(readfd, numBytesToBeOffset, SEEK_SET);
-	
-	//shared data segment so lock the critical section
-	//check if the numBytesToBeRead is greater than the MAXBUFFERSIZE which is 512
-      	if(numBytesToBeRead>MAXBUFFERSIZE)
-      	{
-		//pthread_mutex_lock(&userListMutex);
-      		while(numBytesToBeRead!=0)
-	  	{
-			if(numBytesToBeRead<MAXBUFFERSIZE)
-			{
-				//update the value of currentBitsReadFlag from the read function 
-            			currentBitsReadInFlag+=read(readfd,outputBuffer,numBytesToBeRead-1);
-				//append the end of the outputerBuffer to a null termianting character
-            			strcat(outputBuffer,"\0");
-				//updated the value of readResult
-            			readResult=readResult+currentBitsReadInFlag;
-		    		readResult++;
-				//updated the value of numBytesToBeRead so we don't overwrite
-           			numBytesToBeRead=numBytesToBeRead-currentBitsReadInFlag;
-				//validate currentBytesResult flag
-            			currentByesResult=1;
-            			break;
-          		}
-          		if(numBytesToBeRead>MAXBUFFERSIZE)
-			{
-				readResult=readResult+read(readfd,buffer,MAXBUFFERSIZE);
-            			numBytesToBeRead=numBytesToBeRead-MAXBUFFERSIZE;
-			}
-        	}
-      }
-      else
-      {
-		//pthread_mutex_lock(&userListMutex);
-		//If numBytesToBeRead is NOT greater than MAXBUFFERSIZE than simple check read the values from the buffer
-        	readResult=read(readfd,buffer,numBytesToBeRead);
-      }
-      //unlock the critical section
-      pthread_mutex_unlock(&userListMutex);
-      printf("NetRead: Buffer Result: %s\n", buffer);
-      int bytesReadResult=readResult;
-      //send back the results back to the client
-      if(send(packet->clientFileDescriptor, &bytesReadResult,sizeof(bytesReadResult),0)==-1)
-      {
-       	 perror("ERROR: NetRead request has an issue in sending result!");
-      }
-      //if there was an error getting the resulting size
-      if(readResult==-1)
-      {
-	//send errno back to the client 
-        printf("NetRead: Sending errno :%d\n", errno);
-        errorNumber=errno;
-	//Check whether or not the data to be sent back to the client is equal to -1
-        if(send(packet->clientFileDescriptor,&errorNumber,sizeof(errorNumber),0)==-1)
-	{
-		perror("ERROR: NetRead request could not send errno to client!");
-        }
-        return packet;
-     }
-     //if the currentBytesResult flag is validated meaning we actually read from the buffer from the NetRead request
-     if(currentByesResult==1)
-     {
+    if((offsetReciever=recv(packet->clientFileDescriptor, &offsetReciever,sizeof(offsetReciever),0))==-1){
+        perror("ERROR: read request could not receive the offset");
+    }else{
+        printf("read recieved offset");
+    }
+
+    //get the proper directory name 
+    char* newPath = (char*)malloc(sizeof(char) * 100);
+    strcpy(newPath, MOUNTPATH);
+    strcat(newPath, buffer);
+
+    //setup to read into buffer
+    memset(buffer, '\0', MAXBUFFERSIZE);
+    int fd = open(newPath, O_RDONLY);
+    if(read(fd, buffer, MAXBUFFERSIZE)){
+        perror("read: reading from %s file fails =>");
+    }else{
+        printf("read: read %s from file %s\n", buffer, newPath);
+    }
+    
+    //send size of buffer back to the client
+      //if(send(packet->clientFileDescriptor, buffer,sizeof(buffer),0)==-1)
+    int bufferLen = strlen(buffer);
+    if(send(packet->clientFileDescriptor, &bufferLen,sizeof(int),0)==-1){
+       	 perror("ERROR: NetRead request has an issue in sending size result!");
+    }
+      
 	//check whether or not the output buffer is equal to the null terminating character
-	if(strcmp(outputBuffer,"\0")==0)
-	{
+	if(strcmp(buffer,"\0")==0){
 		printf("NetRead: Sending buffer: %s\n", buffer);
-	    	if(send(packet->clientFileDescriptor,buffer,readResult,0)==-1)
-		{
-			perror("ERROR: NetRead request has an issue with sending the buffer back to the client");
+	    	if(send(packet->clientFileDescriptor,buffer,bufferLen,0)==-1){
+			    perror("ERROR: NetRead request broke while sending the buffer back to the client");
           	}
-        }
-	else
-	{
-		printf("NetRead request sending buffer: %s\n", outputBuffer);
-	    	if(send(packet->clientFileDescriptor,outputBuffer,currentBitsReadInFlag,0)==-1)
-		{
-			perror("ERROR: NetRead request has an issue with sending the buffer back to the client");
-          	}
-        }
-     }
-     else
-     {
-	printf("NetRead: Sending buffer: %s\n", buffer);
-        if(send(packet->clientFileDescriptor,buffer,readResult,0)==-1)
-	{
-		perror("ERROR: NetRead request has an issue with sending the buffer back to the client");
+        
+    }else{
+        /*
+		printf("NetRead request sending buffer: %s\n", buffer);
+	    if(send(packet->clientFileDescriptor,buffer,currentBitsReadInFlag,0)==-1){
+			perror("ERROR: NetRead request broke while sending the buffer back to the client");
+        }else{
+        */
+	    printf("NetRead: Sending buffer: %s\n", buffer);
+        if(send(packet->clientFileDescriptor,buffer,bufferLen,0)==-1){
+		    perror("ERROR: NetRead request broke while sending the buffer back to the client");
         }
     }
     return packet;
+
 }
 
 //The write method takes in the amount of bytes the client wants to write and the buffer they passed in

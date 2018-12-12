@@ -14,9 +14,14 @@ int main(){
 
 //creat("/tmp/fuse/newFile",S_IRUSR);
 
-   int aaa = open("/tmp/fuse/newFile???txt", O_CREAT | O_RDWR);
+   int aaa = open("/tmp/fuse/ass1.txt", O_CREAT | O_RDWR);
    printf("fd is %d", aaa);
-   perror("err: ");
+   
+    char buf[100];
+    
+    read(aaa, buf, 99);
+    printf("%s\n", buf);
+
 /*
 //    printf("not open success %d\n", aaa);
     printf("%d\n",creat("/tmp/fuse/bob.txt", O_WRONLY));
