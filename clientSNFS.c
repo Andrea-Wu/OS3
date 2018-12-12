@@ -450,7 +450,7 @@ int do_readdir(const char * path, void * buffer, fuse_fill_dir_t filler, off_t o
     sockDescriptor=connectionForClientRequests(sockDescriptor);
     printf("readdir: Connected to %s\n", ipAddressArray);
 	//For Thread synchronization
-	
+    sleep(1);	
 	printf("readdir: Sending File Mode\n");
 	
     	int netreadMessage=htonl(NETREADDIR);
@@ -459,19 +459,20 @@ int do_readdir(const char * path, void * buffer, fuse_fill_dir_t filler, off_t o
         	perror("ReadDir request fails");
     	}
 
-    	
+    sleep(1);
 	printf("ReadDir: Sending Directory path name\n");
     //Send String to the client 
     if(send(sockDescriptor,path,strlen(path),0)==-1){
         perror("ERROR: NetWrite request fails to send over string message to the server!\n");
     }
     
-	
+	sleep(1);
 	int offset_to_read = htonl(offset);
 	if(send(sockDescriptor,&offset_to_read, sizeof(int),0) == -1){
 		perror("ERROR: NetRead cound not send the bytes over to be read to the server");
 	}
 
+    sleep(1);
 	//Here we set up to receive the result from the server
 	printf("NetReaddir: waiting to receive result\n");
     int resultSize=0;

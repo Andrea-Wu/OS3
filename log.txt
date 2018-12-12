@@ -4,8 +4,15 @@ readdir: Connected to 2.0.43.103
 readdir: Sending File Mode
 ReadDir: Sending Directory path name
 NetReaddir: waiting to receive result
-NetReaddir: Received result size: 0
-recieved from server=> È¤Oª7
+NetReaddir: Received result size: 23
+recieved from server=> .
+..
+ass1.txt
+ass2.txt
+
 result from tokenizng buffer:
-È¤Oª7
+.
+---..
+---ass1.txt
+---ass2.txt
 ---releaseDired
