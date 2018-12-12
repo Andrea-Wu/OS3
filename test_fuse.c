@@ -7,9 +7,12 @@
 
 int main(){
 
-
+/*
     readdir(opendir("/tmp/fuse"));
     perror("readdir err: ");
+*/
+
+    creat("/tmp/fuse/newFile",S_IRUSR);
 /*
 //    int aaa = open("/tmp/fuse/what_is_this??.txt", O_RDWR);
 //    printf("not open success %d\n", aaa);

@@ -1,102 +1,163 @@
 Reviewing If Address Info Is Valid For: facade.cs.rutgers.edu
 fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.103
+Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
 fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.103
+Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
-openDiredi -> path is /
-readdir: Connected to 2.0.43.103
-readdir: Sending File Mode
+does opendir do anything
+readdir: Connected to 2.0.43.104
+readdir sent request type
 ReadDir: Sending Directory path name
 NetReaddir: waiting to receive result
-NetReaddir: Received result size: 23
+NetReaddir: Received result size: 28
 recieved from server=> .
 ..
 ass1.txt
 ass2.txt
+asss
 
 result from tokenizng buffer:
 .
 ---..
 ---ass1.txt
 ---ass2.txt
+---asss
 ---fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.103
+Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
 fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.103
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
 releaseDired
-openDiredi -> path is /
-readdir: Connected to 2.0.43.103
-readdir: Sending File Mode
+does opendir do anything
+readdir: Connected to 2.0.43.104
+readdir sent request type
 ReadDir: Sending Directory path name
 NetReaddir: waiting to receive result
-NetReaddir: Received result size: 23
+NetReaddir: Received result size: 28
 recieved from server=> .
 ..
 ass1.txt
 ass2.txt
-
+asss
+<
 result from tokenizng buffer:
 .
 ---..
 ---ass1.txt
 ---ass2.txt
----fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.103
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.103
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.103
-NetGetattr: Sending Path.
-releaseDired
-openDiredi -> path is /
-readdir: Connected to 2.0.43.103
-readdir: Sending File Mode
+---asss
+---<
+---releaseDired
+does opendir do anything
+readdir: Connected to 2.0.43.104
+readdir sent request type
 ReadDir: Sending Directory path name
 NetReaddir: waiting to receive result
-NetReaddir: Received result size: 23
+NetReaddir: Received result size: 28
 recieved from server=> .
 ..
 ass1.txt
 ass2.txt
-
+asss
+<
 result from tokenizng buffer:
 .
 ---..
 ---ass1.txt
 ---ass2.txt
----fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.103
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.103
-NetGetattr: Sending Path.
-releaseDired
-openDiredi -> path is /
-readdir: Connected to 2.0.43.103
-readdir: Sending File Mode
+---asss
+---<
+---releaseDired
+does opendir do anything
+readdir: Connected to 2.0.43.104
+readdir sent request type
 ReadDir: Sending Directory path name
 NetReaddir: waiting to receive result
-NetReaddir: Received result size: 23
+NetReaddir: Received result size: 28
 recieved from server=> .
 ..
 ass1.txt
 ass2.txt
-
+asss
+<
 result from tokenizng buffer:
 .
 ---..
 ---ass1.txt
 ---ass2.txt
----fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.103
+---asss
+---<
+---releaseDired
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
 fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.103
+Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
-releaseDired
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+does opendir do anything
+readdir: Connected to 2.0.43.104
+readdir sent request type
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 28
+recieved from server=> .
+..
+ass1.txt
+ass2.txt
+asss
+<
+result from tokenizng buffer:
+.
+---..
+---ass1.txt
+---ass2.txt
+---asss
+---<
+---releaseDired
+does opendir do anything
+readdir: Connected to 2.0.43.104
+readdir sent request type
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 28
+recieved from server=> .
+..
+ass1.txt
+ass2.txt
+asss
+<
+result from tokenizng buffer:
+.
+---..
+---ass1.txt
+---ass2.txt
+---asss
+---<
+---releaseDired
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+does opendir do anything
+readdir: Connected to 2.0.43.104
+readdir sent request type
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 5
+recieved from server=> .
+..
+
+result from tokenizng buffer:
+.
+---..
+---releaseDired

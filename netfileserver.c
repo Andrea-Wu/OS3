@@ -189,12 +189,11 @@ clientPacketData* handleOpenRequest(clientPacketData* packet,char buffer[MAXBUFF
 clientPacketData* handleCreateRequest(clientPacketData* packet,char buffer[MAXBUFFERSIZE],int errorNumber)
 {
 	int validPath=0;
-      	if((validPath=recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1)
-	{ 
-		//getting file name to open
-        	perror("NetCreate: Could not receive path");
-        	exit(1);
-      	}
+    if((validPath=recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){ 
+        //getting file name to open
+        perror("NetCreate: Could not receive path");
+        exit(1);
+    }
 	buffer[validPath]='\0';
 	//If valid path them simply print the path to the file
       	printf("NetCreate: Received path: %s\n", buffer);
@@ -693,27 +692,24 @@ clientPacketData* handleReaddirRequest(clientPacketData* packet, char buffer[MAX
         printf("readdir recieved offset");
     }
 
-    //run readdir and send back the result
+    //get the proper directory name and run readdir
     char* newPath = (char*)malloc(sizeof(char) * 100);
     strcpy(newPath, MOUNTPATH);
-   
-    //I HOPE THIS TRUNCATES BUFFER?
     strcat(newPath, buffer);
-    
     DIR* dirp = opendir(newPath);
     struct dirent* readDirRes;
-
-    //memset buffer
     memset(buffer, '\0', MAXBUFFERSIZE);
     readDirRes = readdir(dirp);
+
+    //send result of readdir to client
     while(readDirRes){
         strcat(buffer, readDirRes -> d_name);
-        printf("%s\n", readDirRes -> d_name);
+      //  printf("%s\n", readDirRes -> d_name);
         strcat(buffer, "\n");
         readDirRes = readdir(dirp);
     }
 
-    printf("buffer is => %s\n", buffer);
+    //printf("buffer is => %s\n", buffer);
     
     //send size of buffer back to the client
       //if(send(packet->clientFileDescriptor, buffer,sizeof(buffer),0)==-1)
@@ -744,7 +740,35 @@ clientPacketData* handleReaddirRequest(clientPacketData* packet, char buffer[MAX
     return packet;
 }
 
+clientPacketData* handleOpendirRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
+/* 
+    int msgReciever = 0;
+    if((msgReciever =recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){
+        	perror("ERROR: Netread request could not receive the directory name");
+    }else{
+        printf("readdir recieved directory name\n");
+    }
 
+    
+
+    //get the correct directory and run opendir
+    char* newPath = (char*)malloc(sizeof(char) * 100);
+    strcpy(newPath, MOUNTPATH);
+    strcat(newPath, buffer); 
+    DIR* dirp = opendir(newPath);
+    memset(buffer, '\0', MAXBUFFERSIZE);
+
+    
+    //send size of buffer back to the client
+      //if(send(packet->clientFileDescriptor, buffer,sizeof(buffer),0)==-1)
+    if(send(packet->clientFileDescriptor, *dirp,sizeof(DIR),0)==-1){
+       	 perror("ERROR: NetRead request has an issue in sending size result!");
+    }
+*/
+    printf("I'm pretty sure opendir does nothing\n");
+    return packet;   
+
+}
 
 clientPacketData* handleGetattrRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
 
@@ -762,9 +786,14 @@ clientPacketData* handleGetattrRequest(clientPacketData* packet, char buffer[MAX
     //concat the recieved string with the directory we're reading from 
     char* newPath = (char*)malloc(sizeof(char) * 100);
     strcpy(newPath, MOUNTPATH);
-   
+    strcat(newPath, buffer); 
 
 	int stat_result = stat(newPath, temp);
+    if(S_ISREG(temp -> st_mode )){
+        printf("%s is regular file\n", newPath);
+    }else{
+        printf("%s is a directory\n", newPath);
+    }
 
 	//send back the stat result back to the client
 	if(send(packet->clientFileDescriptor, &stat_result,sizeof(int),0)==-1)
@@ -829,7 +858,7 @@ void *clientRequestCalls(void *clientInfoRequest)
       			printf("NetClose: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
-		case NETCREATE:
+		case NETCREATE: //hello!
 			printf("NetCreate Requst: IP Address %s\n",packet->ipAddress);
       			packet=handleCreateRequest(packet, buffer, errorNumber);
       			//printf("NetCreate: Finished Operation.\n");
@@ -853,19 +882,19 @@ void *clientRequestCalls(void *clientInfoRequest)
       			//printf("NetTruncate: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
-		case NETGETATTR:
+		case NETGETATTR: //done
 			printf("NetGetattr Requst: IP Address %s\n",packet->ipAddress);
       			packet=handleGetattrRequest(packet, buffer, errorNumber);
       			//printf("NetGetattr: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
-		case NETOPENDIR:
+		case NETOPENDIR: //(I am not sure if this is necessary)
 			printf("NetOpendir Requst: IP Address %s\n",packet->ipAddress);
       			packet=handleCloseRequest(packet, buffer, errorNumber);
       			//printf("NetOpendir: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
-		case NETREADDIR:
+		case NETREADDIR: //done
 			printf("NetReaddir Requst: IP Address %s\n",packet->ipAddress);
       			packet=handleReaddirRequest(packet, buffer, errorNumber);
       			//printf("NetReaddir: Finished Operation.\n");
