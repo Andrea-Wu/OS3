@@ -791,8 +791,10 @@ clientPacketData* handleGetattrRequest(clientPacketData* packet, char buffer[MAX
 	int stat_result = stat(newPath, temp);
     if(S_ISREG(temp -> st_mode )){
         printf("%s is regular file\n", newPath);
-    }else{
+    }else if (S_ISDIR(temp -> st_mode)){
         printf("%s is a directory\n", newPath);
+    }else{
+        printf("%s is a undefined file or doesn't exist?\n", newPath);
     }
 
 	//send back the stat result back to the client

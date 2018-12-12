@@ -178,66 +178,67 @@ int do_open(const char * path , struct fuse_file_info * ffi){
     	/***Make a seperate method for sending pathname and flags from the code below!***/
 	printf("NetOpen: Sending File Mode.\n");
 	int netOpenRequestResults=0;
-	netOpenRequestResults=handleNetOpenRequests(sockDescriptor,path,ffi->flags);
-	if(netOpenRequestResults < 0){
+	netOpenRequestResults=handleNetOpenRequests(sockDescriptor,path,ffi->flags);	
+    printf("returned from hnor\n");
+    if(netOpenRequestResults < 0){
 		ffi->fh = netOpenRequestResults;
 	}
-
-    	return 0;
+    return 0;
 }
 
-int handleNetOpenRequests(int sockDescriptor,const char* pathname,int flags)
-{
-        int openRequest=htonl(NETOPEN);
-        if(send(sockDescriptor,&openRequest,sizeof(openRequest),0)==-1)
-        {
-                perror("ERROR: NetOpen request could not read the message!\n");
-        }
-        
-	printf("NetOpen: Sending Path.\n");
-        if(send(sockDescriptor,pathname,strlen(pathname),0)==-1)
-        {
-                perror("ERROR: NetOpen request could not send path!\n");
-        }
-        
+int handleNetOpenRequests(int sockDescriptor,const char* pathname,int flags){
+    int openRequest=htonl(NETOPEN);
+    if(send(sockDescriptor,&openRequest,sizeof(openRequest),0)==-1){
+        perror("ERROR: NetOpen request could not read the message!\n");
+    }
+    sleep(1);
+
+    if(send(sockDescriptor,pathname,strlen(pathname),0)==-1){
+        perror("ERROR: NetOpen request could not send path!\n");
+    }else{
+        printf("NetOpen: sent path.\n");
+    }
+    sleep(1);
+
 	//sending flags to server side to handle client requests
+    int flagsForRequest=htonl(flags);
+    if(send(sockDescriptor,&flagsForRequest,sizeof(flagsForRequest),0)==-1){
+        perror("ERROR: NetOpen request could not send flags to server!");
+    }else{
         printf("NetOpen: Sending Flags\n");
-        int flagsForRequest=htonl(flags);
-        if(send(sockDescriptor,&flagsForRequest,sizeof(flagsForRequest),0)==-1)
-        {
-                perror("ERROR: NetOpen request could not send flags to server!");
-        }
-        //printf("NetOpen: waiting to receive result.\n");
-        int resultFileDescriptor=0;
-        int resultMsg=0;
-	//Receiving data back from the server side, check whether or not server side returns an error
-        if((resultMsg=recv(sockDescriptor,&resultFileDescriptor,sizeof(resultFileDescriptor),0))==-1){
-                perror("ERROR: NetOpen request could not receive result from server!\n");
-                exit(-1);
-        }
+    }
+    sleep(1);
+
+    //printf("NetOpen: waiting to receive result.\n");
+    int resultFileDescriptor=0;
+    int resultMsg=0;
+    //Receiving data back from the server side, check whether or not server side returns an error
+    if((resultMsg=recv(sockDescriptor,&resultFileDescriptor,sizeof(resultFileDescriptor),0))==-1){
+        perror("ERROR: NetOpen request could not receive result from server!\n");
+        exit(-1);
+    }else{ 
         printf("NetOpen: recieved result FD!\n");
-        int resultCode=resultFileDescriptor;
-        int errorTypeMessage=0;
-	//Now that we received a file descriptr make sure it does not equal -1, which means there is an error!
-	if(resultCode==-1)
-        {
-		//NetOpen fails to receive errno from server
-                if((resultCode=recv(sockDescriptor,&errorTypeMessage,sizeof(errorTypeMessage),0))==-1)
-                {
-                         perror("ERROR: NetOpen request does not receive errno!\n");
-                }
-		//Checking errno and whether permission was denied!
-                if(errorTypeMessage==DENIED_ACCESS)
-                {
-                        errno=13;
-                        perror("ERROR: NetOpen request could not open file due to restrictions.");
-                }
-                else
-                {
-                        errno=errorTypeMessage;
-                        perror("ERROR from server side!");
-                }
+    }
+    sleep(1);
+
+    int resultCode=resultFileDescriptor;
+    int errorTypeMessage=0;
+	//Now that we received a file descriptr make sure it does not equal -1, 
+    //which means there is an error!
+	if(resultCode==-1){
+        //NetOpen fails to receive errno from server
+        if((resultCode=recv(sockDescriptor,&errorTypeMessage,sizeof(errorTypeMessage),0))==-1){
+                 perror("ERROR: NetOpen request does not receive errno!\n");
         }
+		//Checking errno and whether permission was denied!
+        if(errorTypeMessage==DENIED_ACCESS){
+            errno=13;
+            perror("ERROR: NetOpen request could not open file due to restrictions.");
+        }else{
+            errno=errorTypeMessage;
+            perror("ERROR from server side!");
+        }
+    }
 	//close the socket
         close(sockDescriptor);
 	//return the result

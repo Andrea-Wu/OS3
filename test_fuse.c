@@ -12,9 +12,12 @@ int main(){
     perror("readdir err: ");
 */
 
-    creat("/tmp/fuse/newFile",S_IRUSR);
+//creat("/tmp/fuse/newFile",S_IRUSR);
+
+   int aaa = open("/tmp/fuse/newFile???txt", O_CREAT | O_RDWR);
+   printf("fd is %d", aaa);
+   perror("err: ");
 /*
-//    int aaa = open("/tmp/fuse/what_is_this??.txt", O_RDWR);
 //    printf("not open success %d\n", aaa);
     printf("%d\n",creat("/tmp/fuse/bob.txt", O_WRONLY));
     printf("%d\n",creat("/tmp/fuse/help.txt", O_WRONLY));
