@@ -402,6 +402,37 @@ int do_write(const char * path, const char * string, size_t size, off_t offset ,
 //close 
 int do_flush(const char * path, struct fuse_file_info * ffi){
     printf("flushing => path is %s\n", path);
+
+	int sockDescriptor=-1;
+	//establish a connection for the Requst
+    sockDescriptor=connectionForClientRequests(sockDescriptor);
+    printf("flush: Connected to %s\n",ipAddressArray);
+
+	//convert to a 32-bit integer host byte order and send to server
+    int netRequest=htonl(NETTRUNCATE);
+    if(send(sockDescriptor,&netRequest,sizeof(int),0)==-1){
+        perror("ERROR: flush request fails to send message to server!\n");
+    }
+    sleep(1);
+
+    //send the file name
+	printf("truncate: Sending path name\n");
+    //Send String to the client 
+    if(send(sockDescriptor,path,strlen(path),0)==-1){
+        perror("truncate request fails to send path name to the server!\n");
+    }
+    sleep(1);
+
+
+    //possibly recieve errno from server
+	printf("truncate: waiting to receive result\n");
+    int result=0;
+    if(recv(sockDescriptor,&result,sizeof(int),0)){
+        perror("ERROR: truncate request could not receive result");
+    }else{
+        printf("truncate: Received result: %d\n", result);
+    }
+
     return 0;
 }
 
@@ -415,7 +446,7 @@ int do_truncate(const char * path, off_t offset){
     printf("truncated\n");
  
 	int sockDescriptor=-1;
-	//establish a connection for the NetWrite Requst
+	//establish a connection for the Requst
     sockDescriptor=connectionForClientRequests(sockDescriptor);
     printf("netruncate: Connected to %s\n",ipAddressArray);
 
@@ -436,6 +467,7 @@ int do_truncate(const char * path, off_t offset){
 
     //send the offset
 	int offset_to_read = htonl(offset);
+    printf("offset_to_read is %d\n", offset_to_read);
 	if(send(sockDescriptor,&offset_to_read, sizeof(int),0) == -1){
 		perror("ERROR: truncate cound not send the offset to server\n");
 	}

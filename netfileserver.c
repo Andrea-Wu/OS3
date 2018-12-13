@@ -654,9 +654,9 @@ clientPacketData* handleOpendirRequest(clientPacketData* packet, char buffer[MAX
 
 }
 
-clientPacketData* handleTruncateRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
+clientPacketData* handleFlushRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
     
-    //get path name
+    //get path name from client
     int msgReciever = 0;
     int offset = 0;
     if((msgReciever =recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){
@@ -665,19 +665,43 @@ clientPacketData* handleTruncateRequest(clientPacketData* packet, char buffer[MA
         printf("readdir recieved directory name\n");
     }
 
-    if(recv(packet->clientFileDescriptor, &offset,sizeof(int),0)){
-        	perror("ERROR: Netread request could not receive the offset");
+    //get actual path name
+    char* newPath = getFilename(buffer);
+    printf("truncate: newPath is %s\n", newPath);
+
+    //perform a flush, which i heard is actually a fsync
+
+
+}
+
+clientPacketData* handleTruncateRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
+    
+    //get path name from client
+    int msgReciever = 0;
+    int offset = 0;
+    if((msgReciever =recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){
+        	perror("ERROR: truncate request could not receive the directory name");
     }else{
-        printf("readdir recieved offset");
+        printf("truncate recieved directory name\n");
+    }
+
+    //get offset from client
+    if(recv(packet->clientFileDescriptor, &offset,sizeof(int),0) == -1){
+        	perror("ERROR: truncate request could not receive the offset");
+    }else{
+        printf("truncate recieved offset %d\n", ntohl(offset));
     }
 
     //get actual path name
     char* newPath = getFilename(buffer);
     printf("truncate: newPath is %s\n", newPath);
-
+    
+    //convert offset using ntohl
+    int actualOffset = ntohl(offset);
+    
     //perform a truncation
     int result = 0;
-    if(result = truncate(newPath, offset)){
+    if(result = truncate(newPath, actualOffset)){
         printf("failed to truncate %s\n", newPath);
         perror("error =>");
     }else{
@@ -792,17 +816,17 @@ void *clientRequestCalls(void *clientInfoRequest)
       			break;
 		case NETFLUSH:
 			printf("NetFlush Requst: IP Address %s\n",packet->ipAddress);
-      			packet=handleCloseRequest(packet, buffer, errorNumber);
+      			packet=handleFlushRequest(packet, buffer, errorNumber);
       			//printf("NetFlush: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
-		case NETRELEASE:
+		case NETRELEASE: 
 			printf("NetRelease Requst: IP Address %s\n",packet->ipAddress);
       			packet=handleCloseRequest(packet, buffer, errorNumber);
       			//printf("NetRelease: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
-		case NETTRUNCATE:
+		case NETTRUNCATE: //maybe done?
 			printf("NetTruncate Requst: IP Address %s\n",packet->ipAddress);
       			packet=handleTruncateRequest(packet, buffer, errorNumber);
       			//printf("NetTruncate: Finished Operation.\n");

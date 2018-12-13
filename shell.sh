@@ -1,3 +1,3 @@
-gcc clientSNFS.c -o client `pkg-config fuse --cflags --libs` 
+gcc clientSNFS.c -o myClient `pkg-config fuse --cflags --libs` 
 rm -rf /tmp/fuse/*
-./client -f  /tmp/fuse > log.txt     
+./myClient -f  /tmp/fuse > log.txt     

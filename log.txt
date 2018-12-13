@@ -5,11 +5,8 @@ NetGetattr: Sending Path.
 truncated
 netruncate: Connected to 2.0.243.115
 truncate: Sending path name
+offset_to_read is 167772160
 truncate: waiting to receive result
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.243.115
 NetGetattr: Sending Path.
-truncated
-netruncate: Connected to 2.0.243.115
-truncate: Sending path name
-truncate: waiting to receive result

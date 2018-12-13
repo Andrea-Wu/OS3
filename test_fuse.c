@@ -18,7 +18,9 @@ int main(){
    printf("fd is %d", aaa);
   */
 
-  int trunc = truncate("/tmp/fuse/ass2.txt", 10);
+  //int trunc = truncate("/tmp/Andrea/hello.txt", 10);
+int trunc = truncate("/tmp/fuse/ass2.txt", 10);
+
   printf("trunc result is %d\n",trunc );
   perror("err =>");
 
