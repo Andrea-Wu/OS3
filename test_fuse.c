@@ -13,10 +13,14 @@ int main(){
 */
 
 //creat("/tmp/fuse/newFile",S_IRUSR);
-
-   int aaa = open("/tmp/fuse/newFile.txt", O_CREAT | O_RDWR);
+/*
+   int aaa = open("/tmp/fuse/.newFile.txt", O_CREAT | O_RDWR);
    printf("fd is %d", aaa);
-   
+  */
+
+  int trunc = truncate("/tmp/fuse/ass2.txt", 10);
+  printf("trunc result is %d\n",trunc );
+  perror("err =>");
 
 /*
 //    printf("not open success %d\n", aaa);

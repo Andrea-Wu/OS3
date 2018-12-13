@@ -489,75 +489,71 @@ clientPacketData* handleMkdirRequest(clientPacketData* packet, char buffer[MAXBU
 	
 
 	int validPath=0;
-      	if((validPath=recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1)
-	{ 
-		//getting file name to open
-        	perror("NetMkdir: Could not receive path");
-        	exit(1);
-      	}
+    if((validPath=recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){ 
+        //getting file name to open
+        perror("NetMkdir: Could not receive path");
+        exit(1);
+    }
 	buffer[validPath]='\0';
-      	printf("NetMkdir: Received path: %s\n", buffer);
-      	packet->fileName=malloc(validPath);
+    printf("NetMkdir: Received path: %s\n", buffer);
+    packet->fileName=malloc(validPath);
 	//copy the name of the filename into the buffer
-     	strcpy(packet->fileName, buffer);
+    strcpy(packet->fileName, buffer);
 	//check the flags received this means flags such as O_RDONLY,O_WRONLY,O_RDWR...etc
-      	int flagsReceived=0;
-      	int checkFlag=0;
+    int flagsReceived=0;
+    int checkFlag=0;
 	//if the flags received from the client side is equal to -1
 	//then print error message saying we have an issue recing flags from client 
-      	if((checkFlag=recv(packet->clientFileDescriptor,&flagsReceived,sizeof(int),0))==-1)
-	{
-        	perror("ERROR: Netopen request has an issue in receiving flags!\n");
-      	}
-	//Convert the flagsReceived into a 32-bit integer in host byte order this is used for data exchange with the method ntohl
-      	int flags=ntohl(flagsReceived);
-      	printf("NetOpen: Received flags: %i\n",flags);
+    if((checkFlag=recv(packet->clientFileDescriptor,&flagsReceived,sizeof(int),0))==-1){
+        perror("ERROR: Netopen request has an issue in receiving flags!\n");
+    }
+
+	//Convert the flagsReceived into a 32-bit integer in host byte order 
+    //this is used for data exchange with the method ntohl
+    int flags=ntohl(flagsReceived);
+    printf("NetOpen: Received flags: %i\n",flags);
 	//initialize the packet field modeFlags with flags
-      	packet->modeFlags=flags;
+    packet->modeFlags=flags;
+
 	// try actually opening the dir and then sending the result FD back
-      	printf("NetMkdir: Trying to open the file\n");
-      	int result=0;
-      	result=mkdir(buffer,flags);
+    printf("NetMkdir: Trying to open the file\n");
+    int result=0;
+    result=mkdir(buffer,flags);
 	//Check the result of open 
 	//If not -1, then we know that the file was able to open successfully 
 	//and we return the negative version of the server file descriptor back to the client side
-      	if(result!=-1)
-      	{
-          packet->serverFileDescriptor=-1*result;
-      	}
+    if(result!=-1){
+      packet->serverFileDescriptor=-1*result;
+    }
+
 	//send over the data the server processed back to the server side!
 	//first check to see if send does not return -1
 	int currentResult=0;
-      	currentResult=result;
+    currentResult=result;
 	//if so then we have a bad file descriptor
-      	if (send(packet->clientFileDescriptor,&currentResult,sizeof(int),0)==-1)
-      	{
-        	perror("ERROR: NetMkdir request has received a bad file descriptor!\n");
-      	}
-      	//if there was an error getting the resulting FD
-      	if(result==-1)
-      	{
-		//Could not send data back to the client properly so we send errno
-        	if(send(packet->clientFileDescriptor,&errorNumber,sizeof(errorNumber),0)==-1)
-		{
-           		perror("NetMkdir: issue with sending errno");
-        	}
+    if (send(packet->clientFileDescriptor,&currentResult,sizeof(int),0)==-1){
+        perror("ERROR: NetMkdir request has received a bad file descriptor!\n");
+    }
+    //if there was an error getting the resulting FD
+    if(result==-1){
+        //Could not send data back to the client properly so we send errno
+        if(send(packet->clientFileDescriptor,&errorNumber,sizeof(errorNumber),0)==-1){
+            perror("NetMkdir: issue with sending errno");
+        }
 	}
-       //check the count of the file descriptor and make sure its less than the length of the fdArray and set the countFileDescriptor to be equal to the current file descriptor
+       //check the count of the file descriptor and make sure its less than the length of the fdArray
+       //and set the countFileDescriptor to be equal to the current file descriptor
        
-      	pthread_mutex_lock(&userListMutex);
-	FileDescriptorTable* newPacket = (FileDescriptorTable*)malloc(sizeof(FileDescriptorTable));
-	newPacket->packetData = packet;
-	newPacket->next = NULL;
-	insertLinkedList(newPacket);
+    pthread_mutex_lock(&userListMutex);
+	    FileDescriptorTable* newPacket = (FileDescriptorTable*)malloc(sizeof(FileDescriptorTable));
+	    newPacket->packetData = packet;
+	    newPacket->next = NULL;
+	    insertLinkedList(newPacket);
 	pthread_mutex_unlock(&userListMutex);
        
-	if(countFileDescriptor<512)
-	{
+	if(countFileDescriptor<512){
 		fdArray[countFileDescriptor]=currentResult;
-	}
-	else
-	{
+	}else{
 		printf("ERROR: NetMkdir request has received too many files too open.\n");
 		countFileDescriptor++;
 	}
@@ -658,6 +654,48 @@ clientPacketData* handleOpendirRequest(clientPacketData* packet, char buffer[MAX
 
 }
 
+clientPacketData* handleTruncateRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
+    
+    //get path name
+    int msgReciever = 0;
+    int offset = 0;
+    if((msgReciever =recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){
+        	perror("ERROR: Netread request could not receive the directory name");
+    }else{
+        printf("readdir recieved directory name\n");
+    }
+
+    if(recv(packet->clientFileDescriptor, &offset,sizeof(int),0)){
+        	perror("ERROR: Netread request could not receive the offset");
+    }else{
+        printf("readdir recieved offset");
+    }
+
+    //get actual path name
+    char* newPath = getFilename(buffer);
+    printf("truncate: newPath is %s\n", newPath);
+
+    //perform a truncation
+    int result = 0;
+    if(result = truncate(newPath, offset)){
+        printf("failed to truncate %s\n", newPath);
+        perror("error =>");
+    }else{
+        printf("successfully truncated %s\n", newPath);
+    }
+
+    //send back result
+ 	if(send(packet->clientFileDescriptor,&result,sizeof(int),0)==-1){
+        printf("truncate: failed to send err code to client\n"); 
+        perror("error => ");
+    }else{
+        printf("truncate: sent err code to client\n");
+    }
+
+
+    return packet;
+}
+
 clientPacketData* handleGetattrRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
 
 	struct stat* temp = (struct stat*)malloc(sizeof(struct stat));	
@@ -746,7 +784,7 @@ void *clientRequestCalls(void *clientInfoRequest)
       			printf("NetClose: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
-		case NETCREATE: //hello!
+		case NETCREATE: //done?
 			printf("NetCreate Requst: IP Address %s\n",packet->ipAddress);
       			packet=handleCreateRequest(packet, buffer, errorNumber);
       			//printf("NetCreate: Finished Operation.\n");
@@ -766,7 +804,7 @@ void *clientRequestCalls(void *clientInfoRequest)
       			break;
 		case NETTRUNCATE:
 			printf("NetTruncate Requst: IP Address %s\n",packet->ipAddress);
-      			packet=handleCloseRequest(packet, buffer, errorNumber);
+      			packet=handleTruncateRequest(packet, buffer, errorNumber);
       			//printf("NetTruncate: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;

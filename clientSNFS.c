@@ -413,7 +413,46 @@ int do_release(const char * path, struct fuse_file_info * ffi){
 //truncate
 int do_truncate(const char * path, off_t offset){
     printf("truncated\n");
-    return 0;
+ 
+	int sockDescriptor=-1;
+	//establish a connection for the NetWrite Requst
+    sockDescriptor=connectionForClientRequests(sockDescriptor);
+    printf("netruncate: Connected to %s\n",ipAddressArray);
+
+	//convert to a 32-bit integer host byte order and send to server
+    int netRequest=htonl(NETTRUNCATE);
+    if(send(sockDescriptor,&netRequest,sizeof(int),0)==-1){
+        perror("ERROR: NetTruncate request fails to send message to server!\n");
+    }
+    sleep(1);
+
+    //send the file name
+	printf("truncate: Sending path name\n");
+    //Send String to the client 
+    if(send(sockDescriptor,path,strlen(path),0)==-1){
+        perror("truncate request fails to send path name to the server!\n");
+    }
+    sleep(1);
+
+    //send the offset
+	int offset_to_read = htonl(offset);
+	if(send(sockDescriptor,&offset_to_read, sizeof(int),0) == -1){
+		perror("ERROR: truncate cound not send the offset to server\n");
+	}
+
+    //possibly recieve errno from server
+	printf("truncate: waiting to receive result\n");
+    int result=0;
+    if(recv(sockDescriptor,&result,sizeof(int),0)){
+        perror("ERROR: truncate request could not receive result");
+    }else{
+        printf("truncate: Received result: %d\n", result);
+    }
+    
+    //if result of truncate is errno, return the errno
+
+	close(sockDescriptor);
+    return -1 * result;
 } 
 
 //opendir
@@ -548,50 +587,51 @@ int do_mkdir(const char * path, mode_t mode){
 
 	int sockDescriptor=-1;
 	//establish a connection for the NetWrite Requst
-    	sockDescriptor=connectionForClientRequests(sockDescriptor);
-    	printf("netmkdir: Connected to %s\n",ipAddressArray);
-	
+    sockDescriptor=connectionForClientRequests(sockDescriptor);
+    printf("netmkdir: Connected to %s\n",ipAddressArray);
+    sleep(1);
+
 	//convert to a 32-bit integer host byte order and send to server
-    	int netRequest=htonl(NETMKDIR);
-    	if(send(sockDescriptor,&netRequest,sizeof(int),0)==-1)
-	{
-        	perror("ERROR: NetMkdir request fails to send message to server!\n");
-    	}
+    int netRequest=htonl(NETMKDIR);
+    if(send(sockDescriptor,&netRequest,sizeof(int),0)==-1){
+        perror("ERROR: NetMkdir request fails to send message to server!\n");
+    }
+    sleep(1);
 	
-	//Send path to the client 
-    	if(send(sockDescriptor,path,strlen(path),0)==-1)
-	{
-        	perror("ERROR: NetMkdir request fails to send over string message to the server!\n");
-    	}
+	//Send path to the server
+    if(send(sockDescriptor,path,strlen(path),0)==-1){
+        perror("ERROR: NetMkdir request fails to send over string message to the server!\n");
+    }
+    sleep(1);
 	
+    //send number of bytes to server
 	int modeOfRequest=htonl(mode);
-    	if(send(sockDescriptor,&modeOfRequest,sizeof(int),0)==-1)
-	{
-        	perror("ERROR: NetMkdir request fails to send over the bytes to the server!\n");
-    	}
-	
+    if(send(sockDescriptor,&modeOfRequest,sizeof(int),0)==-1){
+        perror("ERROR: NetMkdir request fails to send over the bytes to the server!\n");
+    }
+	sleep(1);
+
 	
 	int resultSize=0;
-    	int resultMessage=0;
-    	if((resultMessage=recv(sockDescriptor,&resultSize,sizeof(resultSize),0))==-1)
-	{
-        	perror("ERROR: NetMkdir request could not receive results from the server!\n");
-    	}
+    int resultMessage=0;
+    if((resultMessage=recv(sockDescriptor,&resultSize,sizeof(resultSize),0))==-1){
+        perror("ERROR: NetMkdir request could not receive results from the server!\n");
+    }
+
 	int result=ntohl(resultSize);
-    	printf("NetMkdir: Received result size of: %d\n", result);
+    printf("NetMkdir: Received result size of: %d\n", result);
 	//check result and see if any errors
-    	if(result==-1)
-	{
-        	int errorResult;
-		if((resultMessage=recv(sockDescriptor,&errorResult,sizeof(errorResult),0))==-1)
-		{
-            		perror("netmkdir received an error!");
-        	}
+    if(result==-1){
+        int errorResult;
+        if((resultMessage=recv(sockDescriptor,&errorResult,sizeof(errorResult),0))==-1){
+                perror("netmkdir received an error!");
+        }
 		errno=ntohl(errorResult);
 		perror("NetMkdir request received errno!\n");
+        return  errno;
 	}
 	//close the scoket descriptor
-    	close(sockDescriptor);
+    close(sockDescriptor);
 
     return 0;
 }
