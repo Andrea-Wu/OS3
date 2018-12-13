@@ -87,6 +87,7 @@ int do_getattr(const char* path, struct stat* st){
         errno=errorMessage;
         //set the value of errno
         printf("Errno Is: %s\n",strerror(errno));
+        return -1 * errorMessage;
     }else{
         //char resultString[MAXBUFFERSIZE];
         if(recv(sockDescriptor,st,sizeof(struct stat),0)==-1){
@@ -95,7 +96,8 @@ int do_getattr(const char* path, struct stat* st){
     }
 	
     close(sockDescriptor);
-	return result;
+	//return result;
+    return 0;
 }
 
 //create
@@ -106,20 +108,24 @@ int do_create(const char * path, mode_t mode, struct fuse_file_info * ffi){
 	//estbalish a connection for the following socket descriptor
     sockDescriptor=connectionForClientRequests(sockDescriptor);
     printf("NetCreate: Connected to %s\n",ipAddressArray);
-   	
+   	sleep(1);
+
     /***Make a seperate method for sending pathname and flags from the code below!***/
-	printf("NetCreate: Sending File Mode.\n");
-	
-	int createRequest=htonl(NETOPEN);
+	int createRequest=htonl(NETCREATE);
     if(send(sockDescriptor,&createRequest,sizeof(createRequest),0)==-1){
         perror("ERROR: NetCreate request could not read the message!\n");
+    }else{
+	    printf("NetCreate: Sent File Mode.\n");	
     }
-        
+    sleep(1);
+
+    //send path to server
     if(send(sockDescriptor,path,strlen(path),0)==-1){
         perror("ERROR: NetCreate request could not send path!\n");
     }else{
         printf("NetCreate sent path to server\n");
     }
+    sleep(1);
         
 	//sending flags to server side to handle client requests
     int flagsForRequest=htonl(mode);
@@ -128,7 +134,7 @@ int do_create(const char * path, mode_t mode, struct fuse_file_info * ffi){
     }else{
         printf("NetCreate: sent flags to server\n");
     }
-
+    sleep(1);
 
     //printf("NetCreate: waiting to receive result.\n");
     int resultFileDescriptor=0;

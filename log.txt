@@ -2,6 +2,18 @@ Reviewing If Address Info Is Valid For: facade.cs.rutgers.edu
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts create
+NetCreate: Connected to 2.0.43.104
+NetCreate: Sent File Mode.
+NetCreate sent path to server
+NetCreate: sent flags to server
+NetCreate: recieved result FD!
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+flushing => path is /newFile.txt
+released => path is /newFile.txt
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
@@ -10,224 +22,54 @@ readdir: Connected to 2.0.43.104
 readdir sent request type
 ReadDir: Sending Directory path name
 NetReaddir: waiting to receive result
-NetReaddir: Received result size: 19
+NetReaddir: Received result size: 31
 recieved from server=> .
 ..
 ass2.txt
 asss
+newFile.txt
 
 result from tokenizng buffer:
 .
 ---..
 ---ass2.txt
 ---asss
+---newFile.txt
 ---fuse intercepts getattr
 Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
 releaseDired
 does opendir do anything
 readdir: Connected to 2.0.43.104
 readdir sent request type
 ReadDir: Sending Directory path name
 NetReaddir: waiting to receive result
-NetReaddir: Received result size: 19
+NetReaddir: Received result size: 31
 recieved from server=> .
 ..
 ass2.txt
 asss
+newFile.txt
 
 result from tokenizng buffer:
 .
 ---..
 ---ass2.txt
 ---asss
----releaseDired
-does opendir do anything
-readdir: Connected to 2.0.43.104
-readdir sent request type
-ReadDir: Sending Directory path name
-NetReaddir: waiting to receive result
-NetReaddir: Received result size: 19
-recieved from server=> .
-..
-ass2.txt
-asss
-
-result from tokenizng buffer:
-.
----..
----ass2.txt
----asss
----releaseDired
-does opendir do anything
-readdir: Connected to 2.0.43.104
-readdir sent request type
-ReadDir: Sending Directory path name
-NetReaddir: waiting to receive result
-NetReaddir: Received result size: 19
-recieved from server=> .
-..
-ass2.txt
-asss
-
-result from tokenizng buffer:
-.
----..
----ass2.txt
----asss
----releaseDired
-fuse intercepts getattr
+---newFile.txt
+---fuse intercepts getattr
 Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
-does opendir do anything
-releaseDired
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.104
-NetGetattr: Sending Path.
-Errno Is: No such file or directory
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.104
-NetGetattr: Sending Path.
-Errno Is: No such file or directory
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-does opendir do anything
-releaseDired
-open => path is /ass2.txt
-NetOpen: Connected to 2.0.43.104
-NetOpen: Sending File Mode.
-NetOpen: sent path.
-NetOpen: Sending Flags
-NetOpen: recieved result FD!
-returned from hnor
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
-Errno Is: No such file or directory
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.104
-NetGetattr: Sending Path.
-Errno Is: No such file or directory
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.104
-NetGetattr: Sending Path.
-Errno Is: No such file or directory
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.104
-NetGetattr: Sending Path.
-Errno Is: No such file or directory
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.104
-NetGetattr: Sending Path.
-Errno Is: No such file or directory
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.104
-NetGetattr: Sending Path.
-Errno Is: No such file or directory
-flushing => path is /ass2.txt
-released => path is /ass2.txt
-open => path is /ass2.txt
-NetOpen: Connected to 2.0.43.104
-NetOpen: Sending File Mode.
-NetOpen: sent path.
-NetOpen: Sending Flags
-NetOpen: recieved result FD!
-returned from hnor
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.104
-NetGetattr: Sending Path.
-read: Connected to 2.0.43.104
-read sent request type
-Read: Sending Directory path name
-read: waiting to receive result
-read: Received result size: 26
-recieved from server=> i don't hate this project
-
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.104
-NetGetattr: Sending Path.
-flushing => path is /ass2.txt
-released => path is /ass2.txt
-does opendir do anything
 releaseDired
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.104
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.104
-NetGetattr: Sending Path.
-open => path is /ass2.txt
-NetOpen: Connected to 2.0.43.104
-NetOpen: Sending File Mode.
-NetOpen: sent path.
-NetOpen: Sending Flags
-NetOpen: recieved result FD!
-returned from hnor
-truncated
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.104
-NetGetattr: Sending Path.
-netwrite: Connected to 2.0.43.104
-write: Sending path name
-NetWrite: Received result size of: 26
-flushing => path is /ass2.txt
-released => path is /ass2.txt
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.104
-NetGetattr: Sending Path.

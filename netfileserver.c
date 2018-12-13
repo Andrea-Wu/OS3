@@ -26,6 +26,13 @@ FileDescriptorTable* tableFD=NULL;
 //Create a mutex for syncrhonization
 pthread_mutex_t userListMutex=PTHREAD_MUTEX_INITIALIZER;
 
+char* getFilename(char* path){
+    char* newPath = (char*)malloc(sizeof(char) * 100);
+    strcpy(newPath, MOUNTPATH);
+    strcat(newPath, path);
+    return newPath;
+}
+
 //This method is primarily used to insert each client thread into our file descriptor table whenever netOpen request is called from the client side
 void insertLinkedList(FileDescriptorTable *packetInsertion)
 {
@@ -186,8 +193,7 @@ clientPacketData* handleOpenRequest(clientPacketData* packet,char buffer[MAXBUFF
 	return packet;
 }
 
-clientPacketData* handleCreateRequest(clientPacketData* packet,char buffer[MAXBUFFERSIZE],int errorNumber)
-{
+clientPacketData* handleCreateRequest(clientPacketData* packet,char buffer[MAXBUFFERSIZE],int errorNumber){
 	int validPath=0;
     if((validPath=recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){ 
         //getting file name to open
@@ -196,56 +202,59 @@ clientPacketData* handleCreateRequest(clientPacketData* packet,char buffer[MAXBU
     }
 	buffer[validPath]='\0';
 	//If valid path them simply print the path to the file
-      	printf("NetCreate: Received path: %s\n", buffer);
-	//Initialize the metadata from the client(packet)'s filename (filed within the struct) to validPath
-      	packet->fileName=malloc(validPath);
+    printf("NetCreate: Received path: %s\n", buffer);
+	//Initialize the metadata from the client(packet)'s filename (filed within the struct)
+    //to validPath
+
+    packet->fileName=malloc(validPath);
 	//copy the name of the filename into the buffer
-     	strcpy(packet->fileName, buffer);
+    strcpy(packet->fileName, buffer);
+
 	//check the flags received this means flags such as O_RDONLY,O_WRONLY,O_RDWR...etc
-      	int flagsReceived=0;
-      	int checkFlag=0;
+    int flagsReceived=0;
+    int checkFlag=0;
 	//if the falgs received from the client side is equal to -1
 	//then print error message saying we have an issue recing flags from client 
-      	if((checkFlag=recv(packet->clientFileDescriptor,&flagsReceived,sizeof(int),0))==-1)
-	{
-        	perror("ERROR: Netopen request has an issue in receiving flags!\n");
-      	}
+    if((checkFlag=recv(packet->clientFileDescriptor,&flagsReceived,sizeof(int),0))==-1){
+        perror("ERROR: Netopen request has an issue in receiving flags!\n");
+    }
 	//Convert the flagsReceived into a 32-bit integer in host byte order this is used for data exchange with the method ntohl
-      	int flags=ntohl(flagsReceived);
-      	printf("NetCreate: Received flags: %i\n",flags);
+    int flags=ntohl(flagsReceived);
+    printf("NetCreate: Received flags: %i\n",flags);
 	//initialize the packet field modeFlags with flags
-      	packet->modeFlags=flags;
+    packet->modeFlags=flags;
 	// try actually opening the file and then sending the result FD back
-      	printf("NetCreate: Trying to open the file\n");
-      	int result=0;
-      	result=creat(buffer,flags);
+    printf("NetCreate: Trying to open the file\n");
+
+    char* newPath = getFilename(buffer);
 	//Check the result of open 
 	//If not -1, then we know that the file was able to open successfully 
 	//and we return the negative version of the server file descriptor back to the client side
-      	if(result!=-1)
-      	{
-          packet->serverFileDescriptor=-1*result;
-      	}
+    int result = 0;
+    if((result = creat(newPath,flags))){
+      //packet->serverFileDescriptor=-1*result;
+      perror("netCreate: create file failed => ");
+    }else{
+        printf("netCreate: create file %s success ", newPath);
+    }
 	//send over the data the server processed back to the server side!
 	//first check to see if send does not return -1
 	int currentResult=0;
-      	currentResult=result;
+  	currentResult=result;
 	//if so then we have a bad file descriptor
-      	if (send(packet->clientFileDescriptor,&currentResult,sizeof(int),0)==-1)
-      	{
-        	perror("ERROR: NetCreate request has received a bad file descriptor!\n");
-      	}
+    if (send(packet->clientFileDescriptor,&currentResult,sizeof(int),0)==-1){
+        perror("ERROR: NetCreate request has received a bad file descriptor!\n");
+    }
       	//if there was an error getting the resulting FD
-      	if(result==-1)
-      	{
-		//Could not send data back to the client properly so we send errno
-        	if(send(packet->clientFileDescriptor,&errorNumber,sizeof(errorNumber),0)==-1)
-		{
-           		perror("NetCreate: issue with sending errno");
-        	}
+    if(result==-1){
+    //Could not send data back to the client properly so we send errno
+        if(send(packet->clientFileDescriptor,&errorNumber,sizeof(errorNumber),0)==-1){
+            perror("NetCreate: issue with sending errno");
+        }
 	}
-       //check the count of the file descriptor and make sure its less than the length of the fdArray and set the countFileDescriptor to be equal to the current file descriptor
-       
+   //check the count of the file descriptor and make sure its less than the length of
+   //the fdArray and set the countFileDescriptor to be equal to the current file descriptor
+   
       	pthread_mutex_lock(&userListMutex);
 	FileDescriptorTable* newPacket = (FileDescriptorTable*)malloc(sizeof(FileDescriptorTable));
 	newPacket->packetData = packet;
@@ -253,12 +262,9 @@ clientPacketData* handleCreateRequest(clientPacketData* packet,char buffer[MAXBU
 	insertLinkedList(newPacket);
 	pthread_mutex_unlock(&userListMutex);
        
-	if(countFileDescriptor<512)
-	{
+	if(countFileDescriptor<512){
 		fdArray[countFileDescriptor]=currentResult;
-	}
-	else
-	{
+	}else{
 		printf("ERROR: NetCreate request has received too many files too open.\n");
 		countFileDescriptor++;
 	}
@@ -283,9 +289,7 @@ clientPacketData* handleReadRequest(clientPacketData* packet, char buffer[MAXBUF
     }
 
     //get the proper directory name 
-    char* newPath = (char*)malloc(sizeof(char) * 100);
-    strcpy(newPath, MOUNTPATH);
-    strcat(newPath, buffer);
+    char* newPath = getFilename(buffer);
 
     //setup to read into buffer
     memset(buffer, '\0', MAXBUFFERSIZE);
@@ -339,9 +343,7 @@ clientPacketData* handleWriteRequest(clientPacketData* packet, char buffer[MAXBU
     buffer[msgReciever] = '\0'; //not sure
 
     //get the right file name, call it "newPath"
-    char* newPath = (char*)malloc(sizeof(char) * 100);
-    strcpy(newPath, MOUNTPATH);
-    strcat(newPath, buffer);
+    char* newPath = getFilename(buffer);
     
     //receive byte size
     size_t writenbytesReceived;
@@ -377,8 +379,6 @@ clientPacketData* handleWriteRequest(clientPacketData* packet, char buffer[MAXBU
 	//convert into 32-bit integer host byte order
 	off_t numBytesToBeOffset =ntohl(offsetBytesReceived);
     printf("NetWrite: Received offset: %d\n", numBytesToBeOffset);
-
-
 
     int writeresult;
     pthread_mutex_lock(&userListMutex); 
@@ -583,9 +583,8 @@ clientPacketData* handleReaddirRequest(clientPacketData* packet, char buffer[MAX
     }
 
     //get the proper directory name and run readdir
-    char* newPath = (char*)malloc(sizeof(char) * 100);
-    strcpy(newPath, MOUNTPATH);
-    strcat(newPath, buffer);
+    char* newPath = getFilename(buffer);
+
     DIR* dirp = opendir(newPath);
     struct dirent* readDirRes;
     memset(buffer, '\0', MAXBUFFERSIZE);
@@ -673,9 +672,7 @@ clientPacketData* handleGetattrRequest(clientPacketData* packet, char buffer[MAX
       	printf("NetGetattr: Received path: %s\n", buffer);
 
     //concat the recieved string with the directory we're reading from 
-    char* newPath = (char*)malloc(sizeof(char) * 100);
-    strcpy(newPath, MOUNTPATH);
-    strcat(newPath, buffer); 
+    char* newPath = getFilename(buffer);
 
 	int stat_result = stat(newPath, temp);
     if(S_ISREG(temp -> st_mode )){
@@ -731,13 +728,13 @@ void *clientRequestCalls(void *clientInfoRequest)
         		printf("NetOpen: Finished Operation.\n");
         		close(packet->clientFileDescriptor);
         		break;
-		case NETREAD:
+		case NETREAD: //done
 			printf("NetRead Request: IP Address %s\n",packet->ipAddress);
       			packet=handleReadRequest(packet, buffer, errorNumber);
       			printf("NetRead: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
-		case NETWRITE:
+		case NETWRITE: //done
 			printf("NetWrite Request: IP Address %s\n",packet->ipAddress);
       			packet = handleWriteRequest(packet, buffer, errorNumber);
       			printf("NetWrite: Finished Operation.\n");
