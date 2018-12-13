@@ -5,12 +5,19 @@ NetGetattr: Sending Path.
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.243.115
 NetGetattr: Sending Path.
+Errno Is: No such file or directory
+mkdired
+netmkdir: Connected to 2.0.243.115
+NetMkdir: Received result size of: 0
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
 does opendir do anything
 readdir: Connected to 2.0.243.115
 readdir sent request type
 ReadDir: Sending Directory path name
 NetReaddir: waiting to receive result
-NetReaddir: Received result size: 272
+NetReaddir: Received result size: 284
 recieved from server=> .
 ..
 asss
@@ -35,6 +42,8 @@ ass2.txt
 ass2_txt.swo
 test
 test2
+test3
+test4
 
 result from tokenizng buffer:
 .
@@ -61,7 +70,15 @@ result from tokenizng buffer:
 ---ass2_txt.swo
 ---test
 ---test2
+---test3
+---test4
 ---fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
 Netgetattr: Connected to 2.0.243.115
 NetGetattr: Sending Path.
 fuse intercepts getattr
@@ -98,22 +115,12 @@ fuse intercepts getattr
 Netgetattr: Connected to 2.0.243.115
 NetGetattr: Sending Path.
 releaseDired
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.115
-NetGetattr: Sending Path.
-Errno Is: No such file or directory
-mkdired
-netmkdir: Connected to 2.0.243.115
-NetMkdir: Received result size of: 0
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.115
-NetGetattr: Sending Path.
 does opendir do anything
 readdir: Connected to 2.0.243.115
 readdir sent request type
 ReadDir: Sending Directory path name
 NetReaddir: waiting to receive result
-NetReaddir: Received result size: 278
+NetReaddir: Received result size: 284
 recieved from server=> .
 ..
 asss
@@ -139,6 +146,7 @@ ass2_txt.swo
 test
 test2
 test3
+test4
 
 result from tokenizng buffer:
 .
@@ -166,7 +174,11 @@ result from tokenizng buffer:
 ---test
 ---test2
 ---test3
+---test4
 ---fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
 Netgetattr: Connected to 2.0.243.115
 NetGetattr: Sending Path.
 fuse intercepts getattr
