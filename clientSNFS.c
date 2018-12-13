@@ -321,76 +321,72 @@ int do_read(const char* path, char* buf, size_t size, off_t offset, struct fuse_
 
 //write
 int do_write(const char * path, const char * string, size_t size, off_t offset ,struct fuse_file_info * ffi){
-    //i think the 1st string is the path 
-    //printf("writed => path is %s, string is %s, size is %d, offset is %d\n", path,string,size,offset);
-    
+   
+
 	int sockDescriptor=-1;
 	//establish a connection for the NetWrite Requst
-    	sockDescriptor=connectionForClientRequests(sockDescriptor);
-    	printf("netwrite: Connected to %s\n",ipAddressArray);
-	
-	//convert to a 32-bit integer host byte order and send to server
-    	int netRequest=htonl(NETWRITE);
-    	if(send(sockDescriptor,&netRequest,sizeof(int),0)==-1)
-	{
-        	perror("ERROR: NetWrite request fails to send message to server!\n");
-    	}
-	
-	printf("NetWrite request sending over file descriptor to server\n");
-    	int filedescriptorWriteRequest=htonl(ffi->fh);
-	//Sending over the data to the client
-    	if(send(sockDescriptor,&filedescriptorWriteRequest,sizeof(int),0)==-1)
-	{
-        	perror("ERROR: NetWrite request fails to send over the file descriptor to the server!\n");
-    	}
+    sockDescriptor=connectionForClientRequests(sockDescriptor);
+    printf("netwrite: Connected to %s\n",ipAddressArray);
 
-    	
-	//sending byte size to the client
-    	//printf("netwrite: Sending nbyte to Server: %d\n", size);
-    	int sizeOfRequest=htonl(size);
-    	if(send(sockDescriptor,&sizeOfRequest,sizeof(int),0)==-1)
-	{
-        	perror("ERROR: NetWrite request fails to send over the bytes to the server!\n");
-    	}
+	//convert to a 32-bit integer host byte order and send to server
+    int netRequest=htonl(NETWRITE);
+    if(send(sockDescriptor,&netRequest,sizeof(int),0)==-1){
+        perror("ERROR: NetWrite request fails to send message to server!\n");
+    }
+    sleep(1);
+
+    //send the file name
+	printf("write: Sending path name\n");
+    //Send String to the client 
+    if(send(sockDescriptor,path,strlen(path),0)==-1){
+        perror("write request fails to send path name to the server!\n");
+    }
+    sleep(1);
+	
+    //sending byte size to the client
+    //printf("netwrite: Sending nbyte to Server: %d\n", size);
+    int sizeOfRequest=htonl(size);
+    if(send(sockDescriptor,&sizeOfRequest,sizeof(int),0)==-1){
+        perror("ERROR: NetWrite request fails to send over the bytes to the server!\n");
+    }
+    sleep(1);
 	
 	//Send String to the client 
-    	//printf("netwrite: Sending String.\n");
-    	if(send(sockDescriptor,string,strlen(string),0)==-1)
-	{
-        	perror("ERROR: NetWrite request fails to send over string message to the server!\n");
-    	}
+    //printf("netwrite: Sending String.\n");
+    if(send(sockDescriptor,string,strlen(string),0)==-1){
+        perror("ERROR: NetWrite request fails to send over string message to the server!\n");
+    }
+    sleep(1);
 	
 	//Send offset to the client 
-    	int offsetOfRequest=htonl(offset);
-    	if(send(sockDescriptor,&offsetOfRequest,sizeof(int),0)==-1)
-	{
-        	perror("ERROR: NetWrite request fails to send over string message to the server!\n");
-    	}
+    int offsetOfRequest=htonl(offset);
+    if(send(sockDescriptor,&offsetOfRequest,sizeof(int),0)==-1){
+        perror("ERROR: NetWrite request fails to send over string message to the server!\n");
+    }
+    sleep(1);
 
+    int resultSize=0;
+    int resultMessage=0;
+    if((resultMessage=recv(sockDescriptor,&resultSize,sizeof(resultSize),0))==-1){
+        perror("ERROR: NetWrite request could not receive results from the server!\n");
+    }
+    sleep(1);
 
-    	int resultSize=0;
-    	int resultMessage=0;
-    	if((resultMessage=recv(sockDescriptor,&resultSize,sizeof(resultSize),0))==-1)
-	{
-        	perror("ERROR: NetWrite request could not receive results from the server!\n");
-    	}
 	int result=ntohl(resultSize);
-    	printf("NetWrite: Received result size of: %d\n", result);
+    printf("NetWrite: Received result size of: %d\n", result);
 	//check result and see if any errors
     	//printf("netwrite: checking for errors.\n");
-    	if(result==-1)
-	{
-        	int errorResult;
-		if((resultMessage=recv(sockDescriptor,&errorResult,sizeof(errorResult),0))==-1)
-		{
-            		perror("netwrite received an error!");
-        	}
+    if(result==-1){
+        int errorResult;
+        if((resultMessage=recv(sockDescriptor,&errorResult,sizeof(errorResult),0))==-1){
+            perror("netwrite received an error!");
+        }
 		errno=ntohl(errorResult);
 		perror("NetWrite request received errno!\n");
 	}
 	//close the scoket descriptor
-    	close(sockDescriptor);
-    	return result;
+    close(sockDescriptor);
+    return result;
 
 }
 
@@ -506,9 +502,11 @@ int do_readdir(const char * path, void * buffer, fuse_fill_dir_t filler, off_t o
         printf("Errno Is: %s\n",strerror(errno));
     }else{
         char buf[MAXBUFFERSIZE];
-        if(recv(sockDescriptor,buf,resultSize,0)==-1){
+        int msgReceiver = 0;
+        if((msgReceiver = recv(sockDescriptor,buf,resultSize,0))==-1){
             perror("NetRead requests receives error from server");
         }else{
+            buf[msgReceiver] = '\0';
             printf("recieved from server=> %s\n", buf);
             printf("result from tokenizng buffer:\n");
             char* token = strtok(buf, "\n");

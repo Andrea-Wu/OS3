@@ -124,7 +124,7 @@ Read: Sending Directory path name
 read: waiting to receive result
 read: Received result size: 26
 recieved from server=> hello i hate this project
-ö
+Î–’
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
@@ -150,5 +150,32 @@ fuse intercepts getattr
 Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
 netwrite: Connected to 2.0.43.104
-NetWrite request sending over file descriptor to server
-NetWrite: Received result size of: 0
+write: Sending path name
+NetWrite: Received result size of: 32
+flushing => path is /ass1.txt
+released => path is /ass1.txt
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+open => path is /ass1.txt
+NetOpen: Connected to 2.0.43.104
+NetOpen: Sending File Mode.
+NetOpen: sent path.
+NetOpen: Sending Flags
+NetOpen: recieved result FD!
+returned from hnor
+truncated
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+netwrite: Connected to 2.0.43.104
+write: Sending path name
+NetWrite: Received result size of: 32
+flushing => path is /ass1.txt
+released => path is /ass1.txt
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.

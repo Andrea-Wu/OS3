@@ -327,85 +327,86 @@ clientPacketData* handleReadRequest(clientPacketData* packet, char buffer[MAXBUF
 }
 
 //The write method takes in the amount of bytes the client wants to write and the buffer they passed in
-clientPacketData* handleWriteRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber)
-{
-      	int fdReceived=0;
-      	int fdMessage=0;
-	//Check the data that comes from the client side and see whether or not an error occured
-      	if((fdMessage=recv(packet->clientFileDescriptor,&fdReceived,sizeof(fdReceived),0))==-1)
-      	{
-		//return error message
-        	perror("ERROR: NetWrite request was Unable to receive message with file descriptor\n");
-      	}
-	//convert into 32-bit integer host byte order
-      	int writefd=ntohl(fdReceived);
-      	printf("NetWrite: Received File Descriptor: %d\n", writefd);
-	//if the result from nthol returns -1 then we have a bad file descriptor
-      	if(writefd==-1)
-      	{
-		writefd=-1;
-      	}
-	//valid file descriptor! return the negative file descriptor back to the client 
-      	else if(writefd<0)
-	{
-        	printf("%d\n", writefd);
-        	writefd = writefd * -1;
-      	}
-      	size_t writenbytesReceived;
-      	int writenbyteMessage;
-	//check the number of bytes received from the client side to write into our buffer and see whether or not it returns -1, if so error
-      	if((writenbyteMessage=recv(packet->clientFileDescriptor,&writenbytesReceived,sizeof(writenbytesReceived),0))==-1)
-	{
-       		perror("ERROR: NetWrite request was not able to receive the bytes from client side");
-      	}
-      	size_t writenbyte=ntohl(writenbytesReceived);
-      	printf("NetWrite: Waiting for string to write in file...\n");
-      	int stringMessage=0;
-	//get the message to write into our buffer from the client and check whether or not the server received the message properly by whether or not it returns -1
-      	if((stringMessage=recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1)
-	{
-        	perror("ERROR: NetWrite did not receive a message to write from the client!\n");
-        	exit(1);
-      	}
-	//set the last character to a null terminating character
-      	buffer[stringMessage]='\0';
-      	printf("NetWrite: Received string: %s\n", buffer);
-      	
+clientPacketData* handleWriteRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
+
+    //receive the file name 
+    int msgReciever = 0;
+    if((msgReciever =recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){
+        perror("write: server could not receive the file name => ");
+    }else{
+        printf("write: server recieved directory name\n");
+    }
+    buffer[msgReciever] = '\0'; //not sure
+
+    //get the right file name, call it "newPath"
+    char* newPath = (char*)malloc(sizeof(char) * 100);
+    strcpy(newPath, MOUNTPATH);
+    strcat(newPath, buffer);
+    
+    //receive byte size
+    size_t writenbytesReceived;
+    int writenbyteMessage;
+    //check the number of bytes received from the client side to write into our buffer 
+    //and see whether or not it returns -1, if so error
+    if((writenbyteMessage=recv(packet->clientFileDescriptor,&writenbytesReceived,sizeof(writenbytesReceived),0))==-1){
+        perror("ERROR: NetWrite request was not able to receive the bytes from client side");
+    }
+    size_t writenbyte=ntohl(writenbytesReceived);
+
+    //receive string
+    printf("NetWrite: Waiting for string to write in file...\n");
+    int stringMessage=0;
+    //get the message to write into our buffer from the client 
+    //and check whether or not the server received the message properly
+    //by whether or not it returns -1
+    if((stringMessage=recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){
+        perror("ERROR: NetWrite did not receive a message to write from the client!\n");
+        exit(1);
+    }
+    //set the last character to a null terminating character
+    buffer[stringMessage]='\0';
+    printf("NetWrite: Received string: %s\n", buffer);
+    
 	
 	off_t offsetBytesReceived;
 	int messageBit;
 	//check the data received from the NetRead request from client and see whether or not it returns -1, if so print error message
-	if((messageBit=recv(packet->clientFileDescriptor,&offsetBytesReceived,sizeof(offsetBytesReceived),0))==-1)
-	{
-       		perror("ERROR: Netwrite request could not receive the offset from client");
-      	}
+	if((messageBit=recv(packet->clientFileDescriptor,&offsetBytesReceived,sizeof(offsetBytesReceived),0))==-1){
+        perror("ERROR: Netwrite request could not receive the offset from client");
+    }
 	//convert into 32-bit integer host byte order
 	off_t numBytesToBeOffset =ntohl(offsetBytesReceived);
-      	printf("NetWrite: Received offset: %d\n", numBytesToBeOffset);
-	
+    printf("NetWrite: Received offset: %d\n", numBytesToBeOffset);
 
 
-pthread_mutex_lock(&userListMutex);
-      	//printf("NetWrite: Trying to write to the file\n");
-      	lseek(writefd, numBytesToBeOffset, SEEK_SET);
-	int writeresult=write(writefd, buffer, writenbyte);
-pthread_mutex_unlock(&userListMutex);
-      	int writeresultCurrent=htonl(writeresult);
-      	if(send(packet->clientFileDescriptor,&writeresultCurrent,sizeof(writeresultCurrent),0)==-1)
-	{
-        	perror("ERROR: NetWrite request was Unable to send result back to the client!\n");
-      	}
-      	//if there was an error getting the resulting size
-      	if(writeresult==-1)
-	{
-        	printf("NetWrite: Sending errno: %d\n", errno);
-        	errorNumber=htonl(errno);
-        	if(send(packet->clientFileDescriptor,&errorNumber,sizeof(errorNumber),0)==-1)
-		{
-          		perror("ERROR: NetWrite: Issue with sending errno");
-        	}
-    	}
-    	return packet;
+
+    int writeresult;
+    pthread_mutex_lock(&userListMutex); 
+        int writefd = open(newPath, O_WRONLY);
+        perror("opening file err? =>");
+        lseek(writefd, numBytesToBeOffset, SEEK_SET);
+        if((writeresult = write(writefd, buffer, writenbyte)) < 0){
+            perror("err writing to file: ");
+            printf("file is %s\n", newPath);
+        }else{
+            printf("wroted to file %s a string of %s\n", newPath, buffer);
+        }
+    pthread_mutex_unlock(&userListMutex);
+
+    int writeresultCurrent=htonl(writeresult);
+    if(send(packet->clientFileDescriptor,&writeresultCurrent,sizeof(writeresultCurrent),0)==-1){
+        perror("ERROR: NetWrite request was Unable to send result back to the client!\n");
+    }
+
+    //if there was an error getting the resulting size
+    if(writeresult==-1){
+        printf("NetWrite: Sending errno: %d\n", errno);
+        errorNumber=htonl(errno);
+        if(send(packet->clientFileDescriptor,&errorNumber,sizeof(errorNumber),0)==-1){
+            perror("ERROR: NetWrite: Issue with sending errno");
+        }
+    }
+    return packet;
 }
 
 //this method closes the FD in which was recieved from the open method and returns 0 if successfull
@@ -598,7 +599,6 @@ clientPacketData* handleReaddirRequest(clientPacketData* packet, char buffer[MAX
         readDirRes = readdir(dirp);
     }
 
-    //printf("buffer is => %s\n", buffer);
     
     //send size of buffer back to the client
       //if(send(packet->clientFileDescriptor, buffer,sizeof(buffer),0)==-1)
