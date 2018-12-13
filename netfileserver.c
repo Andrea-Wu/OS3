@@ -220,7 +220,7 @@ clientPacketData* handleCreateRequest(clientPacketData* packet,char buffer[MAXBU
     }
 	//Convert the flagsReceived into a 32-bit integer in host byte order this is used for data exchange with the method ntohl
     int flags=ntohl(flagsReceived);
-    printf("NetCreate: Received flags: %i\n",flags);
+    printf("NetCreate: Received flags: %d\n",flags);
 	//initialize the packet field modeFlags with flags
     packet->modeFlags=flags;
 	// try actually opening the file and then sending the result FD back
@@ -232,7 +232,7 @@ clientPacketData* handleCreateRequest(clientPacketData* packet,char buffer[MAXBU
 	//and we return the negative version of the server file descriptor back to the client side
     int result = 0;
     if((result = creat(newPath,flags))){
-      //packet->serverFileDescriptor=-1*result;
+      packet->serverFileDescriptor=-1*result;
       perror("netCreate: create file failed => ");
     }else{
         printf("netCreate: create file %s success ", newPath);

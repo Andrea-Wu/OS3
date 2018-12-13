@@ -2,18 +2,279 @@ Reviewing If Address Info Is Valid For: facade.cs.rutgers.edu
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
+does opendir do anything
+readdir: Connected to 2.0.43.104
+readdir sent request type
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 31
+recieved from server=> .
+..
+ass2.txt
+asss
+newFile.txt
+
+result from tokenizng buffer:
+.
+---..
+---ass2.txt
+---asss
+---newFile.txt
+---fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+releaseDired
+does opendir do anything
+readdir: Connected to 2.0.43.104
+readdir sent request type
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 31
+recieved from server=> .
+..
+ass2.txt
+asss
+newFile.txt
+
+result from tokenizng buffer:
+.
+---..
+---ass2.txt
+---asss
+---newFile.txt
+---fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+releaseDired
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+does opendir do anything
+releaseDired
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
 Errno Is: No such file or directory
 fuse intercepts create
 NetCreate: Connected to 2.0.43.104
 NetCreate: Sent File Mode.
 NetCreate sent path to server
 NetCreate: sent flags to server
+flags are 33152
 NetCreate: recieved result FD!
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
-flushing => path is /newFile.txt
-released => path is /newFile.txt
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts create
+NetCreate: Connected to 2.0.43.104
+NetCreate: Sent File Mode.
+NetCreate sent path to server
+NetCreate: sent flags to server
+flags are 33152
+NetCreate: recieved result FD!
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+flushing => path is /.wow.txt.swx
+released => path is /.wow.txt.swx
+flushing => path is /.wow.txt.swp
+fuse intercepts getattr
+released => path is /.wow.txt.swp
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts create
+NetCreate: Connected to 2.0.43.104
+NetCreate: Sent File Mode.
+NetCreate sent path to server
+NetCreate: sent flags to server
+flags are 33152
+NetCreate: recieved result FD!
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+netwrite: Connected to 2.0.43.104
+write: Sending path name
+NetWrite: Received result size of: 4096
+does opendir do anything
+releaseDired
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+netwrite: Connected to 2.0.43.104
+write: Sending path name
+NetWrite: Received result size of: 4096
+netwrite: Connected to 2.0.43.104
+write: Sending path name
+NetWrite: Received result size of: 4096
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts create
+NetCreate: Connected to 2.0.43.104
+NetCreate: Sent File Mode.
+NetCreate sent path to server
+NetCreate: sent flags to server
+flags are 33152
+NetCreate: recieved result FD!
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+flushing => path is /wow.txt
+released => path is /wow.txt
+flushing => path is /wow_txt.swp
+released => path is /wow_txt.swp
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
@@ -22,12 +283,16 @@ readdir: Connected to 2.0.43.104
 readdir sent request type
 ReadDir: Sending Directory path name
 NetReaddir: waiting to receive result
-NetReaddir: Received result size: 31
+NetReaddir: Received result size: 77
 recieved from server=> .
 ..
 ass2.txt
 asss
 newFile.txt
+.wow.txt.swp
+.wow.txt.swx
+wow_txt.swp
+wow.txt
 
 result from tokenizng buffer:
 .
@@ -35,7 +300,308 @@ result from tokenizng buffer:
 ---ass2.txt
 ---asss
 ---newFile.txt
+---.wow.txt.swp
+---.wow.txt.swx
+---wow_txt.swp
+---wow.txt
 ---fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+releaseDired
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+does opendir do anything
+releaseDired
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+does opendir do anything
+releaseDired
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts create
+NetCreate: Connected to 2.0.43.104
+NetCreate: Sent File Mode.
+NetCreate sent path to server
+NetCreate: sent flags to server
+flags are 33152
+NetCreate: recieved result FD!
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts create
+NetCreate: Connected to 2.0.43.104
+NetCreate: Sent File Mode.
+NetCreate sent path to server
+NetCreate: sent flags to server
+flags are 33152
+NetCreate: recieved result FD!
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+flushing => path is /.this_is_fine.txt.swx
+released => path is /.this_is_fine.txt.swx
+flushing => path is /.this_is_fine.txt.swp
+released => path is /.this_is_fine.txt.swp
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts create
+NetCreate: Connected to 2.0.43.104
+NetCreate: Sent File Mode.
+NetCreate sent path to server
+NetCreate: sent flags to server
+flags are 33152
+NetCreate: recieved result FD!
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+netwrite: Connected to 2.0.43.104
+write: Sending path name
+NetWrite: Received result size of: 4096
+does opendir do anything
+releaseDired
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+netwrite: Connected to 2.0.43.104
+write: Sending path name
+NetWrite: Received result size of: 4096
+netwrite: Connected to 2.0.43.104
+write: Sending path name
+NetWrite: Received result size of: 4096
+netwrite: Connected to 2.0.43.104
+write: Sending path name
+NetWrite: Received result size of: 4096
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+fuse intercepts create
+NetCreate: Connected to 2.0.43.104
+NetCreate: Sent File Mode.
+NetCreate sent path to server
+NetCreate: sent flags to server
+flags are 33152
+NetCreate: recieved result FD!
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+netwrite: Connected to 2.0.43.104
+write: Sending path name
+NetWrite: Received result size of: 25
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+flushing => path is /this_is_fine.txt
+released => path is /this_is_fine.txt
+netwrite: Connected to 2.0.43.104
+write: Sending path name
+NetWrite: Received result size of: 4096
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+flushing => path is /this_is_.swp
+released => path is /this_is_.swp
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+does opendir do anything
+readdir: Connected to 2.0.43.104
+readdir sent request type
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 151
+recieved from server=> .
+..
+ass2.txt
+asss
+newFile.txt
+.wow.txt.swp
+.wow.txt.swx
+wow_txt.swp
+wow.txt
+.this_is_fine.txt.swp
+.this_is_fine.txt.swx
+this_is_.swp
+this_is_fine.txt
+
+result from tokenizng buffer:
+.
+---..
+---ass2.txt
+---asss
+---newFile.txt
+---.wow.txt.swp
+---.wow.txt.swx
+---wow_txt.swp
+---wow.txt
+---.this_is_fine.txt.swp
+---.this_is_fine.txt.swx
+---this_is_.swp
+---this_is_fine.txt
+---fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.43.104
+NetGetattr: Sending Path.
+fuse intercepts getattr
 Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
 fuse intercepts getattr
@@ -50,12 +616,20 @@ readdir: Connected to 2.0.43.104
 readdir sent request type
 ReadDir: Sending Directory path name
 NetReaddir: waiting to receive result
-NetReaddir: Received result size: 31
+NetReaddir: Received result size: 151
 recieved from server=> .
 ..
 ass2.txt
 asss
 newFile.txt
+.wow.txt.swp
+.wow.txt.swx
+wow_txt.swp
+wow.txt
+.this_is_fine.txt.swp
+.this_is_fine.txt.swx
+this_is_.swp
+this_is_fine.txt
 
 result from tokenizng buffer:
 .
@@ -63,13 +637,158 @@ result from tokenizng buffer:
 ---ass2.txt
 ---asss
 ---newFile.txt
----fuse intercepts getattr
-Netgetattr: Connected to 2.0.43.104
-NetGetattr: Sending Path.
+---.wow.txt.swp
+---.wow.txt.swx
+---wow_txt.swp
+---wow.txt
+---.this_is_fine.txt.swp
+---.this_is_fine.txt.swx
+---this_is_.swp
+---this_is_fine.txt
+---releaseDired
+does opendir do anything
+readdir: Connected to 2.0.43.104
+readdir sent request type
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 151
+recieved from server=> .
+..
+ass2.txt
+asss
+newFile.txt
+.wow.txt.swp
+.wow.txt.swx
+wow_txt.swp
+wow.txt
+.this_is_fine.txt.swp
+.this_is_fine.txt.swx
+this_is_.swp
+this_is_fine.txt
+
+result from tokenizng buffer:
+.
+---..
+---ass2.txt
+---asss
+---newFile.txt
+---.wow.txt.swp
+---.wow.txt.swx
+---wow_txt.swp
+---wow.txt
+---.this_is_fine.txt.swp
+---.this_is_fine.txt.swx
+---this_is_.swp
+---this_is_fine.txt
+---releaseDired
+does opendir do anything
+readdir: Connected to 2.0.43.104
+readdir sent request type
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 151
+recieved from server=> .
+..
+ass2.txt
+asss
+newFile.txt
+.wow.txt.swp
+.wow.txt.swx
+wow_txt.swp
+wow.txt
+.this_is_fine.txt.swp
+.this_is_fine.txt.swx
+this_is_.swp
+this_is_fine.txt
+
+result from tokenizng buffer:
+.
+---..
+---ass2.txt
+---asss
+---newFile.txt
+---.wow.txt.swp
+---.wow.txt.swx
+---wow_txt.swp
+---wow.txt
+---.this_is_fine.txt.swp
+---.this_is_fine.txt.swx
+---this_is_.swp
+---this_is_fine.txt
+---releaseDired
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.43.104
 NetGetattr: Sending Path.
-releaseDired
+does opendir do anything
+readdir: Connected to 2.0.43.104
+readdir sent request type
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 151
+recieved from server=> .
+..
+ass2.txt
+asss
+newFile.txt
+.wow.txt.swp
+.wow.txt.swx
+wow_txt.swp
+wow.txt
+.this_is_fine.txt.swp
+.this_is_fine.txt.swx
+this_is_.swp
+this_is_fine.txt
+
+result from tokenizng buffer:
+.
+---..
+---ass2.txt
+---asss
+---newFile.txt
+---.wow.txt.swp
+---.wow.txt.swx
+---wow_txt.swp
+---wow.txt
+---.this_is_fine.txt.swp
+---.this_is_fine.txt.swx
+---this_is_.swp
+---this_is_fine.txt
+---releaseDired
+does opendir do anything
+readdir: Connected to 2.0.43.104
+readdir sent request type
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 151
+recieved from server=> .
+..
+ass2.txt
+asss
+newFile.txt
+.wow.txt.swp
+.wow.txt.swx
+wow_txt.swp
+wow.txt
+.this_is_fine.txt.swp
+.this_is_fine.txt.swx
+this_is_.swp
+this_is_fine.txt
+
+result from tokenizng buffer:
+.
+---..
+---ass2.txt
+---asss
+---newFile.txt
+---.wow.txt.swp
+---.wow.txt.swx
+---wow_txt.swp
+---wow.txt
+---.this_is_fine.txt.swp
+---.this_is_fine.txt.swx
+---this_is_.swp
+---this_is_fine.txt
+---releaseDired

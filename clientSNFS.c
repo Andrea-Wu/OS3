@@ -133,6 +133,7 @@ int do_create(const char * path, mode_t mode, struct fuse_file_info * ffi){
         perror("ERROR: NetCreate request could not send flags to server!");
     }else{
         printf("NetCreate: sent flags to server\n");
+        printf("flags are %d\n", mode);
     }
     sleep(1);
 
