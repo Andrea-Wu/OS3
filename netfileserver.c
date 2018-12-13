@@ -495,8 +495,9 @@ clientPacketData* handleMkdirRequest(clientPacketData* packet, char buffer[MAXBU
         exit(1);
     }
 	buffer[validPath]='\0';
-    printf("NetMkdir: Received path: %s\n", buffer);
-    packet->fileName=malloc(validPath);
+	buffer = getFilename(buffer);   
+ printf("NetMkdir: Received path: %s\n", buffer);
+    packet->fileName=malloc(sizeof(buffer));
 	//copy the name of the filename into the buffer
     strcpy(packet->fileName, buffer);
 	//check the flags received this means flags such as O_RDONLY,O_WRONLY,O_RDWR...etc

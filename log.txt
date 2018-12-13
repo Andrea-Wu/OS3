@@ -2,11 +2,207 @@ Reviewing If Address Info Is Valid For: facade.cs.rutgers.edu
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.243.115
 NetGetattr: Sending Path.
-truncated
-netruncate: Connected to 2.0.243.115
-truncate: Sending path name
-offset_to_read is 167772160
-truncate: waiting to receive result
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.243.115
 NetGetattr: Sending Path.
+does opendir do anything
+readdir: Connected to 2.0.243.115
+readdir sent request type
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 272
+recieved from server=> .
+..
+asss
+newFile.txt
+.wow.txt.swp
+.wow.txt.swx
+wow_txt.swp
+wow.txt
+.this_is_fine.txt.swp
+.this_is_fine.txt.swx
+this_is_.swp
+this_is_fine.txt
+.ooooo.swp
+.ooooo.swx
+.ooooo.swo
+.newFile.txt
+.ass2.txt.swp
+.ass2.txt.swx
+ass2_txt.swp
+plain.txt
+ass2.txt
+ass2_txt.swo
+test
+test2
+
+result from tokenizng buffer:
+.
+---..
+---asss
+---newFile.txt
+---.wow.txt.swp
+---.wow.txt.swx
+---wow_txt.swp
+---wow.txt
+---.this_is_fine.txt.swp
+---.this_is_fine.txt.swx
+---this_is_.swp
+---this_is_fine.txt
+---.ooooo.swp
+---.ooooo.swx
+---.ooooo.swo
+---.newFile.txt
+---.ass2.txt.swp
+---.ass2.txt.swx
+---ass2_txt.swp
+---plain.txt
+---ass2.txt
+---ass2_txt.swo
+---test
+---test2
+---fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+releaseDired
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+Errno Is: No such file or directory
+mkdired
+netmkdir: Connected to 2.0.243.115
+NetMkdir: Received result size of: 0
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+does opendir do anything
+readdir: Connected to 2.0.243.115
+readdir sent request type
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 278
+recieved from server=> .
+..
+asss
+newFile.txt
+.wow.txt.swp
+.wow.txt.swx
+wow_txt.swp
+wow.txt
+.this_is_fine.txt.swp
+.this_is_fine.txt.swx
+this_is_.swp
+this_is_fine.txt
+.ooooo.swp
+.ooooo.swx
+.ooooo.swo
+.newFile.txt
+.ass2.txt.swp
+.ass2.txt.swx
+ass2_txt.swp
+plain.txt
+ass2.txt
+ass2_txt.swo
+test
+test2
+test3
+
+result from tokenizng buffer:
+.
+---..
+---asss
+---newFile.txt
+---.wow.txt.swp
+---.wow.txt.swx
+---wow_txt.swp
+---wow.txt
+---.this_is_fine.txt.swp
+---.this_is_fine.txt.swx
+---this_is_.swp
+---this_is_fine.txt
+---.ooooo.swp
+---.ooooo.swx
+---.ooooo.swo
+---.newFile.txt
+---.ass2.txt.swp
+---.ass2.txt.swx
+---ass2_txt.swp
+---plain.txt
+---ass2.txt
+---ass2_txt.swo
+---test
+---test2
+---test3
+---fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.115
+NetGetattr: Sending Path.
+releaseDired
