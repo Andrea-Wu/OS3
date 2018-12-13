@@ -306,9 +306,11 @@ int do_read(const char* path, char* buf, size_t size, off_t offset, struct fuse_
         //set the value of errno
         printf("Errno Is: %s\n",strerror(errno));
     }else{
-        if(recv(sockDescriptor,buf,resultSize,0)==-1){
+        int strRes = 0;
+        if((strRes = recv(sockDescriptor,buf,resultSize,0))==-1){
             perror("read requests receives error from server");
         }else{
+            buf[strRes] = '\0';
             printf("recieved from server=> %s\n", buf);
         }
 
