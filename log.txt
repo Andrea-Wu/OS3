@@ -1,0 +1,205 @@
+Reviewing If Address Info Is Valid For: facade.cs.rutgers.edu
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+openDired -> path is /
+opendir: Connected to 2.0.243.137
+opendir sent file mode
+opendir: sent directory path name
+opendir: waiting to receive result
+opendir: Received result: 0
+readdir: Connected to 2.0.243.137
+readdir sent request type
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 116
+recieved from server=> .
+..
+newFile.txt
+plain.txt
+cpMe.txt
+cpMe2.txt
+file1.txt
+file2.txt
+file3.txt
+dir1
+dir2
+dir3
+test
+nick_test.txt
+test2
+
+result from tokenizng buffer:
+.
+---..
+---newFile.txt
+---plain.txt
+---cpMe.txt
+---cpMe2.txt
+---file1.txt
+---file2.txt
+---file3.txt
+---dir1
+---dir2
+---dir3
+---test
+---nick_test.txt
+---test2
+---releaseDired path /
+releasedir: Connected to 2.0.243.137
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+releasedir sent file mode
+openDired -> path is /
+opendir: Connected to 2.0.243.137
+opendir: sent directory path name
+releasedir: waiting to receive result
+releasedir: Received result: 0
+opendir sent file mode
+opendir: sent directory path name
+opendir: waiting to receive result
+opendir: Received result: 0
+readdir: Connected to 2.0.243.137
+readdir sent request type
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 116
+recieved from server=> .
+..
+newFile.txt
+plain.txt
+cpMe.txt
+cpMe2.txt
+file1.txt
+file2.txt
+file3.txt
+dir1
+dir2
+dir3
+test
+nick_test.txt
+test2
+
+result from tokenizng buffer:
+.
+---..
+---newFile.txt
+---plain.txt
+---cpMe.txt
+---cpMe2.txt
+---file1.txt
+---file2.txt
+---file3.txt
+---dir1
+---dir2
+---dir3
+---test
+---nick_test.txt
+---test2
+---releaseDired path /
+releasedir: Connected to 2.0.243.137
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+releasedir sent file mode
+openDired -> path is /
+opendir: Connected to 2.0.243.137
+opendir: sent directory path name
+releasedir: waiting to receive result
+releasedir: Received result: 0
+opendir sent file mode
+opendir: sent directory path name
+opendir: waiting to receive result
+opendir: Received result: 0
+readdir: Connected to 2.0.243.137
+readdir sent request type
+ReadDir: Sending Directory path name
+NetReaddir: waiting to receive result
+NetReaddir: Received result size: 116
+recieved from server=> .
+..
+newFile.txt
+plain.txt
+cpMe.txt
+cpMe2.txt
+file1.txt
+file2.txt
+file3.txt
+dir1
+dir2
+dir3
+test
+nick_test.txt
+test2
+
+result from tokenizng buffer:
+.
+---..
+---newFile.txt
+---plain.txt
+---cpMe.txt
+---cpMe2.txt
+---file1.txt
+---file2.txt
+---file3.txt
+---dir1
+---dir2
+---dir3
+---test
+---nick_test.txt
+---test2
+---fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.137
+NetGetattr: Sending Path.
+releaseDired path /
+releasedir: Connected to 2.0.243.137
+releasedir sent file mode
+opendir: sent directory path name
+releasedir: waiting to receive result
+releasedir: Received result: 0

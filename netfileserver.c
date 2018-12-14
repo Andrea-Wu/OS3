@@ -9,6 +9,10 @@ FileDescriptorTable* tableFD=NULL;
 //Create a mutex for syncrhonization
 pthread_mutex_t userListMutex=PTHREAD_MUTEX_INITIALIZER;
 
+//command line parameters
+char* PORT;
+char* MOUNTPATH;
+
 //the directory linked list
 dirNode* head;
 
@@ -701,7 +705,7 @@ clientPacketData* handleFlushRequest(clientPacketData* packet, char buffer[MAXBU
     if((msgReciever =recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){
         	perror("ERROR: Netread request could not receive the directory name");
     }else{
-        printf("readdir recieved directory name\n");
+        printf("flush recieved directory name\n");
     }
 
     //get actual path name
@@ -910,6 +914,13 @@ int main(int argc, char * argv[]){
     //initialize the directory linked list
     head = (dirNode*)malloc(sizeof(dirNode));
     head->next = NULL;
+
+    //parse flags and set !
+    //assume that in order to run te server, the order of the parameters is:
+    //  ./serverSNFS --port 12345 --mount /tmp/Some_Dir
+    
+    PORT = argv[2]; 
+    MOUNTPATH = argv[4]; 
 
 	int socketFileDescriptor;
   	int serverFileDescriptor;

@@ -17,7 +17,6 @@
 #include <dirent.h>
 
 #define MAXBUFFERSIZE 512
-#define PORT "62345"
 #define INVALID_FILE_MODE -214
 #define DENIED_ACCESS -215
 #include <netinet/in.h>
@@ -46,7 +45,6 @@ int netclose(int fd);
 #define NETREADDIR 11
 #define NETRELEASEDIR 12
 #define NETMKDIR 13
-#define MOUNTPATH "/tmp/OSFake"
 
 typedef struct packet{  
   char ipAddress[INET_ADDRSTRLEN]; //character of the ipAddress for the network with INET_ADDRSTRLEN referring too the length of the string form for the IP Address
