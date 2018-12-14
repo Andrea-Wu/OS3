@@ -747,7 +747,8 @@ int main(int argc, char* argv[]){
     clientSideData.ai_flags=AI_PASSIVE;
     //Checks that host-name exists
     printf("Reviewing If Address Info Is Valid For: %s\n", hostname);
-    if((status=getaddrinfo(hostname,PORT,&clientSideData,&serverSideData))!=0)
+    char* test_port = "62777";
+    if((status=getaddrinfo(hostname,test_port,&clientSideData,&serverSideData))!=0)
     {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
 	h_errno = HOST_NOT_FOUND;
