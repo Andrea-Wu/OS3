@@ -167,8 +167,8 @@ int do_create(const char * path, mode_t mode, struct fuse_file_info * ffi){
 	//close the socket
     close(sockDescriptor);
 	//return the result
-        
 	ffi->fh = resultCode;
+	printf("ffi->fh: %d\n", ffi->fh); 
 
     return 0;
 }

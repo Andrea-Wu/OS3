@@ -127,12 +127,13 @@ clientPacketData* handleOpenRequest(clientPacketData* packet,char buffer[MAXBUFF
 	// try actually opening the file and then sending the result FD back
       	printf("NetOpen: Trying to open the file\n");
       	int result=0;
-      	result=open(buffer,flags);
+      	buffer = getFilename(buffer);
+	result=open(buffer,flags);
 	//Check the result of open 
 	//If not -1, then we know that the file was able to open successfully 
 	//and we return the negative version of the server file descriptor back to the client side
       	if(result!=-1){
-          packet->serverFileDescriptor=-1*result;
+          packet->serverFileDescriptor=result;
       	}
 	//send over the data the server processed back to the server side!
 	//first check to see if send does not return -1
@@ -209,10 +210,10 @@ clientPacketData* handleCreateRequest(clientPacketData* packet,char buffer[MAXBU
 	//and we return the negative version of the server file descriptor back to the client side
     int result = 0;
     if((result = creat(newPath,flags))){
-      packet->serverFileDescriptor=-1*result;
-      perror("netCreate: create file failed => ");
-    }else{
+      packet->serverFileDescriptor=result;
         printf("netCreate: create file %s success ", newPath);
+    }else{
+      perror("netCreate: create file failed => ");
     }
 	//send over the data the server processed back to the server side!
 	//first check to see if send does not return -1
@@ -869,6 +870,7 @@ clientPacketData* handleReleaseRequest(clientPacketData* packet, char buffer[MAX
 
 					if((fd = currentFDTable->packetData->serverFileDescriptor)){
 						close(fd);
+						printf("Deleted\n");
 					}
 					tableFD = NULL;
 					break;
@@ -876,6 +878,7 @@ clientPacketData* handleReleaseRequest(clientPacketData* packet, char buffer[MAX
 				//if the current file descriptor node is at the end of the linked list then set some stuff
 				if((fd = currentFDTable->packetData->serverFileDescriptor)){
 					close(fd);
+					printf("Deleted\n");
 				}
 				previousFDTable->next = NULL;
 				break;
@@ -885,6 +888,7 @@ clientPacketData* handleReleaseRequest(clientPacketData* packet, char buffer[MAX
 			{
 				if((fd = currentFDTable->packetData->serverFileDescriptor)){
 					close(fd);
+					printf("Deleted\n");
 				}
 				tableFD = tableFD->next;
 				currentFDTable = tableFD;
@@ -894,9 +898,11 @@ clientPacketData* handleReleaseRequest(clientPacketData* packet, char buffer[MAX
 			
 			if((fd = currentFDTable->packetData->serverFileDescriptor)){
 				close(fd);
+				printf("Deleted\n");
 			}
 			previousFDTable->next = currentFDTable->next;
 			currentFDTable = previousFDTable->next;
+			printf("Deleted\n");
 			continue;
 		}
 		//increment the previousFDTable
@@ -905,6 +911,7 @@ clientPacketData* handleReleaseRequest(clientPacketData* packet, char buffer[MAX
 		{
 			previousFDTable = currentFDTable;
 			currentFDTable = currentFDTable->next;
+			printf("Deleted\n");
 			continue;
 		}
 		
