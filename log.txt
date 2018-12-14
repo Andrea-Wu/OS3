@@ -1,12 +1,23 @@
 Reviewing If Address Info Is Valid For: facade.cs.rutgers.edu
 fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.115
+Netgetattr: Connected to 2.0.243.125
 NetGetattr: Sending Path.
-truncated
-netruncate: Connected to 2.0.243.115
-truncate: Sending path name
-offset_to_read is 167772160
-truncate: waiting to receive result
+openDired -> path is /asss
+opendir: Connected to 2.0.243.125
+opendir sent file mode
+opendir: sent directory path name
+opendir: waiting to receive result
+releaseDired
 fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.115
+Netgetattr: Connected to 2.0.243.125
 NetGetattr: Sending Path.
+openDired -> path is /asss
+opendir: Connected to 2.0.243.125
+opendir sent file mode
+opendir: sent directory path name
+opendir: waiting to receive result
+releaseDired
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.243.125
+NetGetattr: Sending Path.
+Errno Is: No such file or directory

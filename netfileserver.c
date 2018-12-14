@@ -1,21 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <fcntl.h>
-#include <sys/stat.h>
 #include "libnetfiles.h"
-#include <pthread.h>
-#include <stdbool.h>
-#include <dirent.h>
 
 //Initialize an array of file descriptors of all to 0, our fdArray is 512
 int fdArray[512]={0};
@@ -26,6 +9,9 @@ FileDescriptorTable* tableFD=NULL;
 //Create a mutex for syncrhonization
 pthread_mutex_t userListMutex=PTHREAD_MUTEX_INITIALIZER;
 
+//the directory linked list
+dirNode* head;
+
 char* getFilename(char* path){
     char* newPath = (char*)malloc(sizeof(char) * 100);
     strcpy(newPath, MOUNTPATH);
@@ -34,8 +20,7 @@ char* getFilename(char* path){
 }
 
 //This method is primarily used to insert each client thread into our file descriptor table whenever netOpen request is called from the client side
-void insertLinkedList(FileDescriptorTable *packetInsertion)
-{
+void insertLinkedList(FileDescriptorTable *packetInsertion){
 	FileDescriptorTable* currentTable=tableFD;
 	FileDescriptorTable* previousFDTable=NULL;
 	//pthread_mutex_lock(&userListMutex);
@@ -65,8 +50,7 @@ void removeNode(clientPacketData* target)
     	FileDescriptorTable *previousFDTable=NULL;
 	//for syncrhonization pruposes since the filde descriptor table is a shared data segment 
 	pthread_mutex_lock(&userListMutex);
-	while(currentFDTable!= NULL)
-	{
+	while(currentFDTable!= NULL){
 		//when the node to be deleted is equal to the same as the current node we are at then delete
 		if(target->serverFileDescriptor==currentFDTable->packetData->serverFileDescriptor)
 		{
@@ -110,14 +94,12 @@ void removeNode(clientPacketData* target)
 }
 
 //opens file on the remote machine and returns the FD and any errno. It also checks if the files has been used as well.
-clientPacketData* handleOpenRequest(clientPacketData* packet,char buffer[MAXBUFFERSIZE],int errorNumber)
-{
+clientPacketData* handleOpenRequest(clientPacketData* packet,char buffer[MAXBUFFERSIZE],int errorNumber){
 	int validPath=0;
 	//First check whether the file name given from the client request NETOPEN is valid 
 	//recv from essentially receives the data from the client side
 	//If -1 then we know that the path could not be received and is invalid so we simply exit with exit(1)
-      	if((validPath=recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1)
-	{ 
+      	if((validPath=recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){ 
 		//getting file name to open
         	perror("NetOpen: Could not receive path");
         	exit(1);
@@ -134,8 +116,7 @@ clientPacketData* handleOpenRequest(clientPacketData* packet,char buffer[MAXBUFF
       	int checkFlag=0;
 	//if the falgs received from the client side is equal to -1
 	//then print error message saying we have an issue recing flags from client 
-      	if((checkFlag=recv(packet->clientFileDescriptor,&flagsReceived,sizeof(int),0))==-1)
-	{
+      	if((checkFlag=recv(packet->clientFileDescriptor,&flagsReceived,sizeof(int),0))==-1){
         	perror("ERROR: Netopen request has an issue in receiving flags!\n");
       	}
 	//Convert the flagsReceived into a 32-bit integer in host byte order this is used for data exchange with the method ntohl
@@ -150,8 +131,7 @@ clientPacketData* handleOpenRequest(clientPacketData* packet,char buffer[MAXBUFF
 	//Check the result of open 
 	//If not -1, then we know that the file was able to open successfully 
 	//and we return the negative version of the server file descriptor back to the client side
-      	if(result!=-1)
-      	{
+      	if(result!=-1){
           packet->serverFileDescriptor=-1*result;
       	}
 	//send over the data the server processed back to the server side!
@@ -159,22 +139,19 @@ clientPacketData* handleOpenRequest(clientPacketData* packet,char buffer[MAXBUFF
 	int currentResult=0;
       	currentResult=result;
 	//if so then we have a bad file descriptor
-      	if (send(packet->clientFileDescriptor,&currentResult,sizeof(int),0)==-1)
-      	{
+      	if (send(packet->clientFileDescriptor,&currentResult,sizeof(int),0)==-1){
         	perror("ERROR: NetOpen request has received a bad file descriptor!\n");
       	}
       	//if there was an error getting the resulting FD
-      	if(result==-1)
-      	{
+      	if(result==-1){
 		//Could not send data back to the client properly so we send errno
-        	if(send(packet->clientFileDescriptor,&errorNumber,sizeof(errorNumber),0)==-1)
-		{
+        	if(send(packet->clientFileDescriptor,&errorNumber,sizeof(errorNumber),0)==-1){
            		perror("NetOpen: issue with sending errno");
         	}
 	}
        //check the count of the file descriptor and make sure its less than the length of the fdArray and set the countFileDescriptor to be equal to the current file descriptor
        
-      	pthread_mutex_lock(&userListMutex);
+    pthread_mutex_lock(&userListMutex);
 	FileDescriptorTable* newPacket = (FileDescriptorTable*)malloc(sizeof(FileDescriptorTable));
 	newPacket->packetData = packet;
 	newPacket->next = NULL;
@@ -293,13 +270,28 @@ clientPacketData* handleReadRequest(clientPacketData* packet, char buffer[MAXBUF
 
     //setup to read into buffer
     memset(buffer, '\0', MAXBUFFERSIZE);
+
+    //search up 
+
     int fd = open(newPath, O_RDONLY);
     if(read(fd, buffer, MAXBUFFERSIZE)){
         perror("read: reading from %s file fails =>");
     }else{
         printf("read: read %s from file %s\n", buffer, newPath);
     }
-    
+    /*
+
+typedef struct packet{  
+  char ipAddress[INET_ADDRSTRLEN]; //character of the ipAddress for the network with INET_ADDRSTRLEN referring too the length of the string form for the IP Address
+  int clientFileDescriptor; //file descriptor on the client side
+  int messageMode; // associated with netread netwrite netopen netclose etc
+  int serverFileDescriptor; //file descriptor used on the server side
+  int modeFlags; //this is associated with O_RD, O_WR,O_RDONLY, etc
+  char* fileName;
+} clientPacketData;
+    */
+
+
     //send size of buffer back to the client
       //if(send(packet->clientFileDescriptor, buffer,sizeof(buffer),0)==-1)
     int bufferLen = strlen(buffer);
@@ -312,8 +304,7 @@ clientPacketData* handleReadRequest(clientPacketData* packet, char buffer[MAXBUF
 		printf("NetRead: Sending buffer: %s\n", buffer);
 	    	if(send(packet->clientFileDescriptor,buffer,bufferLen,0)==-1){
 			    perror("ERROR: NetRead request broke while sending the buffer back to the client");
-          	}
-        
+          	} 
     }else{
         /*
 		printf("NetRead request sending buffer: %s\n", buffer);
@@ -625,31 +616,36 @@ clientPacketData* handleReaddirRequest(clientPacketData* packet, char buffer[MAX
 }
 
 clientPacketData* handleOpendirRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
-/* 
+ 
     int msgReciever = 0;
     if((msgReciever =recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){
-        	perror("ERROR: Netread request could not receive the directory name");
+        	perror("ERROR: open request could not receive the directory name");
     }else{
-        printf("readdir recieved directory name\n");
+        printf("open recieved directory name\n");
     }
-
-    
 
     //get the correct directory and run opendir
     char* newPath = (char*)malloc(sizeof(char) * 100);
     strcpy(newPath, MOUNTPATH);
     strcat(newPath, buffer); 
     DIR* dirp = opendir(newPath);
-    memset(buffer, '\0', MAXBUFFERSIZE);
 
-    
-    //send size of buffer back to the client
-      //if(send(packet->clientFileDescriptor, buffer,sizeof(buffer),0)==-1)
-    if(send(packet->clientFileDescriptor, *dirp,sizeof(DIR),0)==-1){
-       	 perror("ERROR: NetRead request has an issue in sending size result!");
+    //insert the information into linked list
+    insertIntoList(head, newPath, dirp);
+
+    //send back errno, if necessary. otherwise send back 0
+    int result = 0;
+    if(dirp == NULL){
+        result = errno;
     }
-*/
-    printf("I'm pretty sure opendir does nothing\n");
+
+ 	if(send(packet->clientFileDescriptor,&result,sizeof(int),0)==-1){
+        printf("opendir: failed to send err code to client\n"); 
+        perror("error => ");
+    }else{
+        printf("opendir: sent err code to client\n");
+    }
+
     return packet;   
 
 }
@@ -670,7 +666,7 @@ clientPacketData* handleFlushRequest(clientPacketData* packet, char buffer[MAXBU
     printf("truncate: newPath is %s\n", newPath);
 
     //perform a flush, which i heard is actually a fsync
-
+    //if(fsync())
 
 }
 
@@ -840,7 +836,7 @@ void *clientRequestCalls(void *clientInfoRequest)
       			break;
 		case NETOPENDIR: //(I am not sure if this is necessary)
 			printf("NetOpendir Requst: IP Address %s\n",packet->ipAddress);
-      			packet=handleCloseRequest(packet, buffer, errorNumber);
+      			packet=handleOpendirRequest(packet, buffer, errorNumber);
       			//printf("NetOpendir: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
@@ -866,8 +862,12 @@ void *clientRequestCalls(void *clientInfoRequest)
 }
 
 //the main method starts the server and sets all required parameters and then creates a packet and sends it through a pthread
-int main(int argc, char * argv[])
-{
+int main(int argc, char * argv[]){
+
+    //initialize the directory linked list
+    dirNode* head = (dirNode*)malloc(sizeof(dirNode));
+    head->next = NULL;
+
 	int socketFileDescriptor;
   	int serverFileDescriptor;
 	// the struct addrinfo allows us to map the host name and service name to an address

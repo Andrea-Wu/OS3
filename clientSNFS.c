@@ -401,8 +401,9 @@ int do_write(const char * path, const char * string, size_t size, off_t offset ,
 
 //close 
 int do_flush(const char * path, struct fuse_file_info * ffi){
+    
     printf("flushing => path is %s\n", path);
-
+/*
 	int sockDescriptor=-1;
 	//establish a connection for the Requst
     sockDescriptor=connectionForClientRequests(sockDescriptor);
@@ -416,23 +417,23 @@ int do_flush(const char * path, struct fuse_file_info * ffi){
     sleep(1);
 
     //send the file name
-	printf("truncate: Sending path name\n");
+	printf("flush: Sending path name\n");
     //Send String to the client 
     if(send(sockDescriptor,path,strlen(path),0)==-1){
-        perror("truncate request fails to send path name to the server!\n");
+        perror("flush request fails to send path name to the server!\n");
     }
     sleep(1);
 
 
     //possibly recieve errno from server
-	printf("truncate: waiting to receive result\n");
+	printf("flush: waiting to receive result\n");
     int result=0;
     if(recv(sockDescriptor,&result,sizeof(int),0)){
-        perror("ERROR: truncate request could not receive result");
+        perror("ERROR: flush request could not receive result");
     }else{
-        printf("truncate: Received result: %d\n", result);
+        printf("flush: Received result: %d\n", result);
     }
-
+    */
     return 0;
 }
 
@@ -489,16 +490,16 @@ int do_truncate(const char * path, off_t offset){
 
 //opendir
 int do_opendir(const char * path, struct fuse_file_info * ffi){
-    /*
+    
     printf("openDired -> path is %s\n", path);
 
     //Establish connection for netOpendir request
-    sockDescriptor=connectionForClientRequests(sockDescriptor);
+    int sockDescriptor=connectionForClientRequests(sockDescriptor);
     printf("opendir: Connected to %s\n", ipAddressArray);
     sleep(1);	
 
     //tell server what type of request to process
-    int netreadMessage=htonl(NETREADDIR);
+    int netreadMessage=htonl(NETOPENDIR);
     if(send(sockDescriptor,&netreadMessage,sizeof(int),0)==-1){
         perror("opendir request fails");
     }else{
@@ -512,7 +513,19 @@ int do_opendir(const char * path, struct fuse_file_info * ffi){
     }else{
         printf("opendir: sent directory path name\n");
     }
-    
+
+    //possibly recieve errno from server
+	printf("opendir: waiting to receive result\n");
+    int result=0;
+    if(recv(sockDescriptor,&result,sizeof(int),0)){
+        perror("ERROR: opendir request could not receive result");
+    }else{
+        printf("opendir: Received result: %d\n", result);
+    }
+     
+
+
+/* 
     //recieve a "DIR" structure from server
     DIR* resultDirp
     if((resultMessage=recv(sockDescriptor,&resultDirp,sizeof(DIR),0))==-1){
@@ -520,9 +533,12 @@ int do_opendir(const char * path, struct fuse_file_info * ffi){
     }else{
         printf("Netopenddir: Received directory stream ");
     }
-*/
-    printf("does opendir do anything\n");
-    return 0;
+
+    //I should check if stream is recieved correctly
+  */
+
+    close(sockDescriptor);
+    return -1 * result;
 }
 
 //readdir

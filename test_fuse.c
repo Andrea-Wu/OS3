@@ -7,23 +7,27 @@
 
 int main(){
 
-/*
+    opendir("/tmp/fuse/fake_dir");
+    perror("opendir err =>");   
+   
+    /*
+
     readdir(opendir("/tmp/fuse"));
     perror("readdir err: ");
-*/
 
+    */
 //creat("/tmp/fuse/newFile",S_IRUSR);
 /*
    int aaa = open("/tmp/fuse/.newFile.txt", O_CREAT | O_RDWR);
    printf("fd is %d", aaa);
   */
-
+/*
   //int trunc = truncate("/tmp/Andrea/hello.txt", 10);
 int trunc = truncate("/tmp/fuse/ass2.txt", 10);
 
   printf("trunc result is %d\n",trunc );
   perror("err =>");
-
+*/
 /*
 //    printf("not open success %d\n", aaa);
     printf("%d\n",creat("/tmp/fuse/bob.txt", O_WRONLY));
