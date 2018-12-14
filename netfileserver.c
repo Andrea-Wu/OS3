@@ -486,8 +486,9 @@ clientPacketData* handleMkdirRequest(clientPacketData* packet, char buffer[MAXBU
         exit(1);
     }
 	buffer[validPath]='\0';
-    printf("NetMkdir: Received path: %s\n", buffer);
-    packet->fileName=malloc(validPath);
+	buffer = getFilename(buffer);   
+ printf("NetMkdir: Received path: %s\n", buffer);
+    packet->fileName=malloc(sizeof(buffer));
 	//copy the name of the filename into the buffer
     strcpy(packet->fileName, buffer);
 	//check the flags received this means flags such as O_RDONLY,O_WRONLY,O_RDWR...etc
@@ -534,21 +535,6 @@ clientPacketData* handleMkdirRequest(clientPacketData* packet, char buffer[MAXBU
 	}
        //check the count of the file descriptor and make sure its less than the length of the fdArray
        //and set the countFileDescriptor to be equal to the current file descriptor
-       
-    pthread_mutex_lock(&userListMutex);
-	    FileDescriptorTable* newPacket = (FileDescriptorTable*)malloc(sizeof(FileDescriptorTable));
-	    newPacket->packetData = packet;
-	    newPacket->next = NULL;
-	    insertLinkedList(newPacket);
-	pthread_mutex_unlock(&userListMutex);
-       
-	if(countFileDescriptor<512){
-		fdArray[countFileDescriptor]=currentResult;
-	}else{
-		printf("ERROR: NetMkdir request has received too many files too open.\n");
-		countFileDescriptor++;
-	}
-
 	return packet;
 }
 
