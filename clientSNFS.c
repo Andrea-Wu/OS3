@@ -14,25 +14,10 @@
 #include <netinet/in.h>
 #include <dirent.h>
 
+
 struct addrinfo clientSideData;
 struct addrinfo* serverSideData;
 char ipAddressArray[INET_ADDRSTRLEN];
-/*
-void loggingFnStrAndrea(char* string){
-    //this is shit and it only writes a string
-    //make a copy of this that also writes ints
-    FILE* fp = fopen("/ilab/users/ayw19/Workspace/OS3/", "a");
-    fprintf(fp,"%s\n", string);
-    fclose(fp);
-}
-
-
-void loggingFnIntAndrea(int myInt){
-    FILE* fp = fopen("/ilab/users/ayw19/Workspace/OS3/", "a");
-    fprintf(fp,"%d\n", myInt);
-    fclose(fp);
-}
-*/
 //connection method that is used for all the net file methods
 int connectionForClientRequests(int socketDescript)
 {
@@ -735,7 +720,25 @@ int do_mkdir(const char * path, mode_t mode){
 
 
 int main(int argc, char* argv[]){
-    char* hostname = "facade.cs.rutgers.edu";
+   
+    //deal with command line stuff
+    char* hostname;
+    char* PORT;
+    if(!strcmp(argv[1], "--port")){
+        PORT = argv[2];
+    }else{
+        printf("bad input\n");
+        exit(0);
+    }
+
+    if(!strcmp(argv[3], "--address")){
+        hostname = argv[4];       
+    }else{
+        printf("bad input\n");
+        exit(0);
+    }
+
+
     int setSocketDescriptor=-1;
     int status=0;
     memset(&clientSideData,0,sizeof(clientSideData));
