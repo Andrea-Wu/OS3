@@ -17,7 +17,7 @@
 #include <dirent.h>
 
 #define MAXBUFFERSIZE 512
-#define PORT "62345"
+#define PORT "62777"
 #define INVALID_FILE_MODE -214
 #define DENIED_ACCESS -215
 #include <netinet/in.h>

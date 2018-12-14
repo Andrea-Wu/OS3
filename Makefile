@@ -1,5 +1,5 @@
 all:
-	gcc -pthread netfileserver.c -o netfileserver
+	gcc -pthread netfileserver.c -o serverSNFS
 
 clean:
-	rm -f netfileserver
+	rm -f serverSNFS

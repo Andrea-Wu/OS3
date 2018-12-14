@@ -254,7 +254,7 @@ int handleNetOpenRequests(int sockDescriptor,const char* pathname,int flags){
                  return resultCode;
         }
 	
-        return -1*resultCode;
+        return resultCode;
 	
 }
 
@@ -403,23 +403,24 @@ int do_write(const char * path, const char * string, size_t size, off_t offset ,
 int do_flush(const char * path, struct fuse_file_info * ffi){
     
     printf("flushing => path is %s\n", path);
-/*
+
 	int sockDescriptor=-1;
 	//establish a connection for the Requst
     sockDescriptor=connectionForClientRequests(sockDescriptor);
     printf("flush: Connected to %s\n",ipAddressArray);
 
 	//convert to a 32-bit integer host byte order and send to server
-    int netRequest=htonl(NETTRUNCATE);
+    int netRequest=htonl(NETFLUSH);
     if(send(sockDescriptor,&netRequest,sizeof(int),0)==-1){
         perror("ERROR: flush request fails to send message to server!\n");
     }
     sleep(1);
 
-    //send the file name
-	printf("flush: Sending path name\n");
-    //Send String to the client 
-    if(send(sockDescriptor,path,strlen(path),0)==-1){
+    //send the fd
+	printf("flush: Sending fd: %d\n", ffi->fh);
+    //Send fd to the client
+    int fd_send = htonl(ffi->fh); 
+    if(send(sockDescriptor,&fd_send,sizeof(int),0)==-1){
         perror("flush request fails to send path name to the server!\n");
     }
     sleep(1);
@@ -428,17 +429,45 @@ int do_flush(const char * path, struct fuse_file_info * ffi){
     //possibly recieve errno from server
 	printf("flush: waiting to receive result\n");
     int result=0;
-    if(recv(sockDescriptor,&result,sizeof(int),0)){
+    int message = 0;
+    if(recv(sockDescriptor,&message,sizeof(int),0) == -1){
         perror("ERROR: flush request could not receive result");
     }else{
+	result = ntohl(message);
         printf("flush: Received result: %d\n", result);
+	if(result == -1){
+		int errno_receive = 0;
+		if(recv(sockDescriptor,&errno_receive,sizeof(int),0) == -1){
+			perror("ERROR: flush requst could not receive result");
+		}
+		errno = ntohl(errno_receive);
+		perror("NetFlush request received errno!\n");
+	}
     }
-    */
-    return 0;
+
+    return result;
 }
 
 int do_release(const char * path, struct fuse_file_info * ffi){
     printf("released => path is %s\n", path);
+	int sockDescriptor = -1;
+	//establish connection
+    sockDescriptor = connectionForClientRequests(sockDescriptor);
+    printf("release: Connected to %s\n", ipAddressArray);
+
+    int netRequest = htonl(NETRELEASE);
+    if(send(sockDescriptor,&netRequest, sizeof(int), 0) == -1){
+	perror("ERROR: release request fails to send message to server!\n");
+    }
+
+
+    sleep(1);
+	printf("Release: Sending dir path name\n");
+    //send string to client
+    if(send(sockDescriptor,path,strlen(path),0) == -1){
+	perror("ERROR: release request fails to send directory path name to the server!\n");
+    }
+    sleep(1);
     return 0;
 }
 
