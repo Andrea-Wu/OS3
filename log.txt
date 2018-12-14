@@ -1,193 +1,18 @@
 Reviewing If Address Info Is Valid For: facade.cs.rutgers.edu
 fuse intercepts getattr
-<<<<<<< HEAD
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-openDired -> path is /
-opendir: Connected to 2.0.243.137
-=======
 Netgetattr: Connected to 2.0.245.57
 NetGetattr: Sending Path.
 openDired -> path is /
 opendir: Connected to 2.0.245.57
->>>>>>> 420689baf2545a4fa1201aa2d16141548e8c98d4
 opendir sent file mode
 opendir: sent directory path name
 opendir: waiting to receive result
 opendir: Received result: 0
-<<<<<<< HEAD
-readdir: Connected to 2.0.243.137
-readdir sent request type
-ReadDir: Sending Directory path name
-NetReaddir: waiting to receive result
-NetReaddir: Received result size: 116
-=======
-readdir: Connected to 2.0.245.57
-readdir sent request type
-ReadDir: Sending Directory path name
-NetReaddir: waiting to receive result
-NetReaddir: Received result size: 131
->>>>>>> 420689baf2545a4fa1201aa2d16141548e8c98d4
-recieved from server=> .
-..
-newFile.txt
-plain.txt
-cpMe.txt
-cpMe2.txt
-file1.txt
-file2.txt
-file3.txt
-dir1
-dir2
-dir3
-test
-nick_test.txt
-test2
-<<<<<<< HEAD
-=======
-test3
-nick.txt
->>>>>>> 420689baf2545a4fa1201aa2d16141548e8c98d4
-
-result from tokenizng buffer:
-.
----..
----newFile.txt
----plain.txt
----cpMe.txt
----cpMe2.txt
----file1.txt
----file2.txt
----file3.txt
----dir1
----dir2
----dir3
----test
----nick_test.txt
----test2
-<<<<<<< HEAD
----releaseDired path /
-releasedir: Connected to 2.0.243.137
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-releasedir sent file mode
-openDired -> path is /
-opendir: Connected to 2.0.243.137
-opendir: sent directory path name
-releasedir: waiting to receive result
-releasedir: Received result: 0
-=======
----test3
----nick.txt
----fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-releaseDired path /
-releasedir: Connected to 2.0.245.57
-releasedir sent file mode
-opendir: sent directory path name
-releasedir: waiting to receive result
-releasedir: Received result: 0
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-Errno Is: No such file or directory
-fuse intercepts create
-NetCreate: Connected to 2.0.245.57
-NetCreate: Sent File Mode.
-NetCreate sent path to server
-NetCreate: sent flags to server
-flags are 33152
-NetCreate: recieved result FD!
-ffi->fh: 6
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-flushing => path is /test.txt
-flush: Connected to 2.0.245.57
-flush: Sending fd: 6
-flush: waiting to receive result
-flush: Received result: 0
-netwrite: Connected to 2.0.245.57
-write: Sending path name
-NetWrite: Received result size of: 10
-flushing => path is /test.txt
-flush: Connected to 2.0.245.57
-flush: Sending fd: 6
-flush: waiting to receive result
-flush: Received result: 0
-released => path is /test.txt
-release: Connected to 2.0.245.57
-Release: Sending dir path name
-openDired -> path is /
-opendir: Connected to 2.0.245.57
->>>>>>> 420689baf2545a4fa1201aa2d16141548e8c98d4
-opendir sent file mode
-opendir: sent directory path name
-opendir: waiting to receive result
-opendir: Received result: 0
-<<<<<<< HEAD
-readdir: Connected to 2.0.243.137
-readdir sent request type
-ReadDir: Sending Directory path name
-NetReaddir: waiting to receive result
-NetReaddir: Received result size: 116
-=======
 readdir: Connected to 2.0.245.57
 readdir sent request type
 ReadDir: Sending Directory path name
 NetReaddir: waiting to receive result
 NetReaddir: Received result size: 140
->>>>>>> 420689baf2545a4fa1201aa2d16141548e8c98d4
 recieved from server=> .
 ..
 newFile.txt
@@ -203,12 +28,9 @@ dir3
 test
 nick_test.txt
 test2
-<<<<<<< HEAD
-=======
 test3
 nick.txt
 test.txt
->>>>>>> 420689baf2545a4fa1201aa2d16141548e8c98d4
 
 result from tokenizng buffer:
 .
@@ -226,19 +48,6 @@ result from tokenizng buffer:
 ---test
 ---nick_test.txt
 ---test2
-<<<<<<< HEAD
----releaseDired path /
-releasedir: Connected to 2.0.243.137
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-releasedir sent file mode
-openDired -> path is /
-opendir: Connected to 2.0.243.137
-opendir: sent directory path name
-releasedir: waiting to receive result
-releasedir: Received result: 0
-=======
 ---test3
 ---nick.txt
 ---test.txt
@@ -327,165 +136,126 @@ flush: Received result: -1
 released => path is /test.txt
 release: Connected to 2.0.245.57
 Release: Sending dir path name
-openDired -> path is /
-opendir: Connected to 2.0.245.57
->>>>>>> 420689baf2545a4fa1201aa2d16141548e8c98d4
-opendir sent file mode
-opendir: sent directory path name
-opendir: waiting to receive result
-opendir: Received result: 0
-<<<<<<< HEAD
-readdir: Connected to 2.0.243.137
-readdir sent request type
-ReadDir: Sending Directory path name
-NetReaddir: waiting to receive result
-NetReaddir: Received result size: 116
-=======
-readdir: Connected to 2.0.245.57
-readdir sent request type
-ReadDir: Sending Directory path name
-NetReaddir: waiting to receive result
-NetReaddir: Received result size: 140
->>>>>>> 420689baf2545a4fa1201aa2d16141548e8c98d4
-recieved from server=> .
-..
-newFile.txt
-plain.txt
-cpMe.txt
-cpMe2.txt
-file1.txt
-file2.txt
-file3.txt
-dir1
-dir2
-dir3
-test
-nick_test.txt
-test2
-<<<<<<< HEAD
-=======
-test3
-nick.txt
-test.txt
->>>>>>> 420689baf2545a4fa1201aa2d16141548e8c98d4
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.245.57
+NetGetattr: Sending Path.
+open => path is /test.txt
+NetOpen: Connected to 2.0.245.57
+NetOpen: Sending File Mode.
+NetOpen: sent path.
+NetOpen: Sending Flags
+NetOpen: recieved result FD!
+returned from hnor
+truncated
+netruncate: Connected to 2.0.245.57
+truncate: Sending path name
+offset_to_read is 0
+truncate: waiting to receive result
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.245.57
+NetGetattr: Sending Path.
+flushing => path is /test.txt
+flush: Connected to 2.0.245.57
+flush: Sending fd: 0
+flush: waiting to receive result
+flush: Received result: -1
+netwrite: Connected to 2.0.245.57
+write: Sending path name
+NetWrite: Received result size of: 5
+flushing => path is /test.txt
+flush: Connected to 2.0.245.57
+flush: Sending fd: 0
+flush: waiting to receive result
+flush: Received result: -1
+released => path is /test.txt
+release: Connected to 2.0.245.57
+Release: Sending dir path name
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.245.57
+NetGetattr: Sending Path.
+open => path is /test.txt
+NetOpen: Connected to 2.0.245.57
+NetOpen: Sending File Mode.
+NetOpen: sent path.
+NetOpen: Sending Flags
+NetOpen: recieved result FD!
+returned from hnor
+fuse intercepts getattr
+Netgetattr: Connected to 2.0.245.57
+NetGetattr: Sending Path.
+read: Connected to 2.0.245.57
+read sent request type
+Read: Sending Directory path name
+read: waiting to receive result
+read: Received result size: 5
+recieved from server=> TEST
 
-result from tokenizng buffer:
-.
----..
----newFile.txt
----plain.txt
----cpMe.txt
----cpMe2.txt
----file1.txt
----file2.txt
----file3.txt
----dir1
----dir2
----dir3
----test
----nick_test.txt
----test2
-<<<<<<< HEAD
----fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.137
-NetGetattr: Sending Path.
-releaseDired path /
-releasedir: Connected to 2.0.243.137
-=======
----test3
----nick.txt
----test.txt
----fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.245.57
 NetGetattr: Sending Path.
+flushing => path is /test.txt
+flush: Connected to 2.0.245.57
+flush: Sending fd: 0
+flush: waiting to receive result
+flush: Received result: -1
+released => path is /test.txt
+release: Connected to 2.0.245.57
+Release: Sending dir path name
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.245.57
 NetGetattr: Sending Path.
+open => path is /test.txt
+NetOpen: Connected to 2.0.245.57
+NetOpen: Sending File Mode.
+NetOpen: sent path.
+NetOpen: Sending Flags
+NetOpen: recieved result FD!
+returned from hnor
+flushing => path is /test.txt
+flush: Connected to 2.0.245.57
+flush: Sending fd: 0
+flush: waiting to receive result
+flush: Received result: -1
+netwrite: Connected to 2.0.245.57
+write: Sending path name
+NetWrite: Received result size of: 5
+flushing => path is /test.txt
+flush: Connected to 2.0.245.57
+flush: Sending fd: 0
+flush: waiting to receive result
+flush: Received result: -1
+released => path is /test.txt
+release: Connected to 2.0.245.57
+Release: Sending dir path name
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.245.57
 NetGetattr: Sending Path.
+open => path is /test.txt
+NetOpen: Connected to 2.0.245.57
+NetOpen: Sending File Mode.
+NetOpen: sent path.
+NetOpen: Sending Flags
+NetOpen: recieved result FD!
+returned from hnor
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.245.57
 NetGetattr: Sending Path.
+read: Connected to 2.0.245.57
+read sent request type
+Read: Sending Directory path name
+read: waiting to receive result
+read: Received result size: 10
+recieved from server=> TEST
+echo
+
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.245.57
 NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.245.57
-NetGetattr: Sending Path.
-releaseDired path /
-releasedir: Connected to 2.0.245.57
->>>>>>> 420689baf2545a4fa1201aa2d16141548e8c98d4
-releasedir sent file mode
-opendir: sent directory path name
-releasedir: waiting to receive result
-releasedir: Received result: 0
+flushing => path is /test.txt
+flush: Connected to 2.0.245.57
+flush: Sending fd: 0
+flush: waiting to receive result
+flush: Received result: -1
+released => path is /test.txt
+release: Connected to 2.0.245.57
+Release: Sending dir path name
