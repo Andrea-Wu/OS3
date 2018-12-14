@@ -6,14 +6,6 @@ Errno Is: No such file or directory
 fuse intercepts getattr
 Netgetattr: Connected to 2.0.243.129
 NetGetattr: Sending Path.
-Errno Is: No such file or directory
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.129
-NetGetattr: Sending Path.
-Errno Is: No such file or directory
-fuse intercepts getattr
-Netgetattr: Connected to 2.0.243.129
-NetGetattr: Sending Path.
 openDired -> path is /asss
 opendir: Connected to 2.0.243.129
 opendir sent file mode
@@ -37,4 +29,8 @@ result from tokenizng buffer:
 ---aaaa
 ---bbbb
 ---cccc
----releaseDired
+---releaseDired path /asss
+releasedir: Connected to 2.0.243.129
+releasedir sent file mode
+releasedir: waiting to receive result
+releasedir: Received result: 0

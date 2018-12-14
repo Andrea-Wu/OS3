@@ -611,8 +611,34 @@ int do_readdir(const char * path, void * buffer, fuse_fill_dir_t filler, off_t o
 
 //releasedir
 int do_releasedir(const char * path, struct fuse_file_info * ffi){
-    printf("releaseDired\n");
-    return 0;
+    printf("releaseDired path %s\n", path); 
+
+    //Establish connection for request
+    int sockDescriptor=connectionForClientRequests(sockDescriptor);
+    printf("releasedir: Connected to %s\n", ipAddressArray);
+    sleep(1);	
+
+    //tell server what type of request to process
+    int netreadMessage=htonl(NETRELEASEDIR);
+    if(send(sockDescriptor,&netreadMessage,sizeof(int),0)==-1){
+        perror("releasedir request fails");
+    }else{
+        printf("releasedir sent file mode\n");
+    }
+    sleep(1);
+    
+    //possibly recieve errno from server
+	printf("releasedir: waiting to receive result\n");
+    int result=0;
+    if(recv(sockDescriptor,&result,sizeof(int),0)==-1){
+        perror("ERROR: releasedir request could not receive result");
+    }else{
+        printf("releasedir: Received result: %d\n", result);
+    }
+
+    close(sockDescriptor);
+    return -1 * result;
+
 }
 
 //mkdir

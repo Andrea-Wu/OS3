@@ -605,6 +605,59 @@ clientPacketData* handleReaddirRequest(clientPacketData* packet, char buffer[MAX
     return packet;
 }
 
+
+
+
+clientPacketData* handleReleasedirRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
+
+    printf("inside releaseDir handler\n");
+    int msgReciever = 0;
+    if((msgReciever =recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){
+        	perror("ERROR: releasedir request could not receive the directory name");
+    }else{
+        printf("releasedir recieved directory name\n");
+    }
+
+    printf("what the shit?\n");
+    //get the correct directory and run opendir
+    char* newPath = (char*)malloc(sizeof(char) * 100);
+    strcpy(newPath, MOUNTPATH);
+    strcat(newPath, buffer); 
+
+    //get the DIR* from LL and release it
+    DIR* closeMe = searchList(head, newPath);
+    int closeResult = 0;
+    if((closeResult = closedir(closeMe)) == -1){
+        printf("releasedir: failed to close directory %s\n", newPath);
+        perror("releasedir: err =>");
+    }else{
+        printf("releasedir: closed directory %s\n", newPath);
+    }
+
+    //remove info from linked list
+    printf("before removing from list\n");
+    deleteFromList(head, newPath);
+    printf("after removing from list\n");
+
+    //send back errno, if necessary. otherwise send back 0
+    int result = 0;
+    if(closeResult != 0){
+        result = errno;
+    }
+ 	if(send(packet->clientFileDescriptor,&result,sizeof(int),0)==-1){
+        printf("releasedir: failed to send err code to client\n"); 
+        perror("error => ");
+    }else{
+        printf("releasedir: sent err code %d to client\n", result);
+    }
+
+    return packet;   
+
+}
+
+
+
+
 clientPacketData* handleOpendirRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
  
     int msgReciever = 0;
@@ -838,7 +891,7 @@ void *clientRequestCalls(void *clientInfoRequest)
       			break;
 		case NETRELEASEDIR:
 			printf("NetReleasedir Requst: IP Address %s\n",packet->ipAddress);
-      			packet=handleCloseRequest(packet, buffer, errorNumber);
+      			packet=handleReleasedirRequest(packet, buffer, errorNumber);
       			//printf("NetReleasedir: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
