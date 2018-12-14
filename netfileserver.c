@@ -131,12 +131,13 @@ clientPacketData* handleOpenRequest(clientPacketData* packet,char buffer[MAXBUFF
 	// try actually opening the file and then sending the result FD back
       	printf("NetOpen: Trying to open the file\n");
       	int result=0;
-      	result=open(buffer,flags);
+      	buffer = getFilename(buffer);
+	result=open(buffer,flags);
 	//Check the result of open 
 	//If not -1, then we know that the file was able to open successfully 
 	//and we return the negative version of the server file descriptor back to the client side
       	if(result!=-1){
-          packet->serverFileDescriptor=-1*result;
+          packet->serverFileDescriptor=result;
       	}
 	//send over the data the server processed back to the server side!
 	//first check to see if send does not return -1
@@ -213,10 +214,10 @@ clientPacketData* handleCreateRequest(clientPacketData* packet,char buffer[MAXBU
 	//and we return the negative version of the server file descriptor back to the client side
     int result = 0;
     if((result = creat(newPath,flags))){
-      packet->serverFileDescriptor=-1*result;
-      perror("netCreate: create file failed => ");
-    }else{
+      packet->serverFileDescriptor=result;
         printf("netCreate: create file %s success ", newPath);
+    }else{
+      perror("netCreate: create file failed => ");
     }
 	//send over the data the server processed back to the server side!
 	//first check to see if send does not return -1
@@ -262,6 +263,9 @@ clientPacketData* handleReadRequest(clientPacketData* packet, char buffer[MAXBUF
     }else{
         printf("read recieved directory name\n");
     }
+    packet->fileName = malloc(msgReciever);
+	//copy the name of the filename into the buffer
+	strcpy(packet->fileName, buffer);
 
     if((offsetReciever=recv(packet->clientFileDescriptor, &offsetReciever,sizeof(offsetReciever),0))==-1){
         perror("ERROR: read request could not receive the offset");
@@ -279,9 +283,9 @@ clientPacketData* handleReadRequest(clientPacketData* packet, char buffer[MAXBUF
 
     int fd = open(newPath, O_RDONLY);
     if(read(fd, buffer, MAXBUFFERSIZE)){
-        perror("read: reading from %s file fails =>");
-    }else{
         printf("read: read %s from file %s\n", buffer, newPath);
+    }else{
+        perror("read: reading from %s file fails =>");
     }
     /*
 
@@ -295,6 +299,13 @@ typedef struct packet{
 } clientPacketData;
     */
 
+	packet->serverFileDescriptor = fd;
+	pthread_mutex_lock(&userListMutex);
+	FileDescriptorTable* newPacket = (FileDescriptorTable*)malloc(sizeof(FileDescriptorTable));
+	newPacket->packetData = packet;
+	newPacket->next = NULL;
+	insertLinkedList(newPacket);
+	pthread_mutex_unlock(&userListMutex);
 
     //send size of buffer back to the client
       //if(send(packet->clientFileDescriptor, buffer,sizeof(buffer),0)==-1)
@@ -336,6 +347,9 @@ clientPacketData* handleWriteRequest(clientPacketData* packet, char buffer[MAXBU
         printf("write: server recieved directory name\n");
     }
     buffer[msgReciever] = '\0'; //not sure
+    packet->fileName = malloc(msgReciever);
+	//copy the name of the filename into the buffer
+	strcpy(packet->fileName, buffer);
 
     //get the right file name, call it "newPath"
     char* newPath = getFilename(buffer);
@@ -379,7 +393,14 @@ clientPacketData* handleWriteRequest(clientPacketData* packet, char buffer[MAXBU
     pthread_mutex_lock(&userListMutex); 
         int writefd = open(newPath, O_WRONLY);
         perror("opening file err? =>");
-        lseek(writefd, numBytesToBeOffset, SEEK_SET);
+        
+	packet->serverFileDescriptor = writefd;
+	FileDescriptorTable* newPacket = (FileDescriptorTable*)malloc(sizeof(FileDescriptorTable));
+	newPacket->packetData = packet;
+	newPacket->next = NULL;
+	insertLinkedList(newPacket);
+
+	lseek(writefd, numBytesToBeOffset, SEEK_SET);
         if((writeresult = write(writefd, buffer, writenbyte)) < 0){
             perror("err writing to file: ");
             printf("file is %s\n", newPath);
@@ -701,20 +722,27 @@ clientPacketData* handleFlushRequest(clientPacketData* packet, char buffer[MAXBU
     
     //get path name from client
     int msgReciever = 0;
-    int offset = 0;
-    if((msgReciever =recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){
+    int flush_fd = 0;
+    int fd = 0;
+    if((msgReciever =recv(packet->clientFileDescriptor,&flush_fd,sizeof(int),0))==-1){
         	perror("ERROR: Netread request could not receive the directory name");
     }else{
-        printf("flush recieved directory name\n");
+	    fd = ntohl(flush_fd);
+        printf("flush recieved fd: %d\n", fd);
     }
 
-    //get actual path name
-    char* newPath = getFilename(buffer);
-    printf("truncate: newPath is %s\n", newPath);
-
-    //perform a flush, which i heard is actually a fsync
-    //if(fsync())
-
+    int result = fsync(fd);
+    int message = htonl(result);
+    if(send(packet->clientFileDescriptor,&message,sizeof(int),0) == -1){
+	perror("ERROR: NetFlush request could not send the result\n");
+    }
+    if(result == -1){
+	int errno_send = htonl(errno);
+	if(send(packet->clientFileDescriptor,&errno_send,sizeof(int),0) == -1){
+		perror("ERROR: NetFlush request could ont send the result\n");
+	}
+    }
+    return packet;
 }
 
 clientPacketData* handleTruncateRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
@@ -818,6 +846,89 @@ clientPacketData* handleGetattrRequest(clientPacketData* packet, char buffer[MAX
 
 }
 
+clientPacketData* handleReleaseRequest(clientPacketData* packet, char buffer[MAXBUFFERSIZE], int errorNumber){
+
+	int msgReciever = 0;
+	if((msgReciever = recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0)) == -1){
+		perror("ERROR: Release request could not receive the directory name");
+	}else{
+		buffer[msgReciever] = '\0';
+		printf("Release received directory name %s\n", buffer);
+	}
+
+	FileDescriptorTable* currentFDTable = tableFD;
+	FileDescriptorTable* previousFDTable = NULL;
+	//for sync purposed
+	pthread_mutex_lock(&userListMutex);
+	int fd = 0;
+	while(currentFDTable != NULL){
+		//when the node to be deleted is equal to the same as the current node we are at then delete
+		if(strcmp(currentFDTable->packetData->fileName, buffer) == 0)
+		{
+			//if there is only one node in the LL
+			if(currentFDTable->next == NULL)
+			{
+				//check to see if the previousFDTable is null, if so the we conclude that there is only one node in the LL
+				if(previousFDTable == NULL)
+				{
+
+					if((fd = currentFDTable->packetData->serverFileDescriptor)){
+						close(fd);
+						printf("Deleted\n");
+					}
+					tableFD = NULL;
+					break;
+				}
+				//if the current file descriptor node is at the end of the linked list then set some stuff
+				if((fd = currentFDTable->packetData->serverFileDescriptor)){
+					close(fd);
+					printf("Deleted\n");
+				}
+				previousFDTable->next = NULL;
+				break;
+			}
+			//if more than one node and the node to be deleted is the head, then simply set tableFd to the next one
+			if(previousFDTable == NULL)
+			{
+				if((fd = currentFDTable->packetData->serverFileDescriptor)){
+					close(fd);
+					printf("Deleted\n");
+				}
+				tableFD = tableFD->next;
+				currentFDTable = tableFD;
+				continue;
+			}
+			//Set previousFDTable->next to the node to be deleted next value which is currentFDTable->next
+			
+			if((fd = currentFDTable->packetData->serverFileDescriptor)){
+				close(fd);
+				printf("Deleted\n");
+			}
+			previousFDTable->next = currentFDTable->next;
+			currentFDTable = previousFDTable->next;
+			printf("Deleted\n");
+			continue;
+		}
+		//increment the previousFDTable
+		//and currentFDTable
+		if(previousFDTable == NULL)
+		{
+			previousFDTable = currentFDTable;
+			currentFDTable = currentFDTable->next;
+			printf("Deleted\n");
+			continue;
+		}
+		
+		previousFDTable = previousFDTable->next;
+		currentFDTable = currentFDTable->next;
+	}
+	//unlock for sync
+	pthread_mutex_unlock(&userListMutex);
+
+	return packet;
+
+}
+
 //function pointer for thread handler 
 //this is used to get the message from the client side on whether they called 
 void *clientRequestCalls(void *clientInfoRequest)
@@ -865,7 +976,7 @@ void *clientRequestCalls(void *clientInfoRequest)
       			break;
 		case NETRELEASE: 
 			printf("NetRelease Requst: IP Address %s\n",packet->ipAddress);
-      			packet=handleCloseRequest(packet, buffer, errorNumber);
+      			packet=handleReleaseRequest(packet, buffer, errorNumber);
       			//printf("NetRelease: Finished Operation.\n");
       			close(packet->clientFileDescriptor);
       			break;
