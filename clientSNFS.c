@@ -727,6 +727,7 @@ int main(int argc, char* argv[]){
     if(!strcmp(argv[1], "--port")){
         PORT = argv[2];
     }else{
+        perror("what");
         printf("bad input\n");
         exit(0);
     }
@@ -734,10 +735,21 @@ int main(int argc, char* argv[]){
     if(!strcmp(argv[3], "--address")){
         hostname = argv[4];       
     }else{
+        perror("what2");
         printf("bad input\n");
         exit(0);
     }
 
+    int argsLeft = argc - 5;
+    char* remainingArgs[argsLeft];
+    remainingArgs[0] = argv[0];
+
+    int k;
+    for(k = 1; k < argsLeft; k++){
+        remainingArgs[k] = argv[k + 5];
+        printf("remainingArg %d => %s\n", k, remainingArgs[k]);
+    }
+    printf("argsLeft is %d", argsLeft);
 
     int setSocketDescriptor=-1;
     int status=0;
@@ -747,8 +759,7 @@ int main(int argc, char* argv[]){
     clientSideData.ai_flags=AI_PASSIVE;
     //Checks that host-name exists
     printf("Reviewing If Address Info Is Valid For: %s\n", hostname);
-    char* test_port = "62777";
-    if((status=getaddrinfo(hostname,test_port,&clientSideData,&serverSideData))!=0)
+    if((status=getaddrinfo(hostname,PORT,&clientSideData,&serverSideData))!=0)
     {
         fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
 	h_errno = HOST_NOT_FOUND;
@@ -769,6 +780,7 @@ int main(int argc, char* argv[]){
     fops -> mkdir = do_mkdir;
     fops -> flush = do_flush;
     fops -> release = do_release;
-    return fuse_main( argc, argv, fops, NULL );
+    perror("should return fuse main");
+    return fuse_main( argsLeft, remainingArgs, fops, NULL);
 }
 
