@@ -626,7 +626,15 @@ int do_releasedir(const char * path, struct fuse_file_info * ffi){
         printf("releasedir sent file mode\n");
     }
     sleep(1);
-    
+   
+
+    //send directory path name to server
+    if(send(sockDescriptor,path,strlen(path),0)==-1){
+        perror("ERROR: opendir request fails to send over string message to the server!\n");
+    }else{
+        printf("opendir: sent directory path name\n");
+    }
+
     //possibly recieve errno from server
 	printf("releasedir: waiting to receive result\n");
     int result=0;

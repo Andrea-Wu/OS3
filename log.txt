@@ -32,5 +32,6 @@ result from tokenizng buffer:
 ---releaseDired path /asss
 releasedir: Connected to 2.0.243.129
 releasedir sent file mode
+opendir: sent directory path name
 releasedir: waiting to receive result
 releasedir: Received result: 0
