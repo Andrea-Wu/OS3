@@ -503,7 +503,7 @@ clientPacketData* handleMkdirRequest(clientPacketData* packet, char buffer[MAXBU
 	//Convert the flagsReceived into a 32-bit integer in host byte order 
     //this is used for data exchange with the method ntohl
     int flags=ntohl(flagsReceived);
-    printf("NetOpen: Received flags: %i\n",flags);
+    printf("NetMkdir: Received flags: %i\n",flags);
 	//initialize the packet field modeFlags with flags
     packet->modeFlags=flags;
 

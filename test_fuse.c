@@ -14,6 +14,7 @@ int main(){
 
     readdir(opendir("/tmp/fuse/asss"));
 
+
     perror("some err =>");
     /*
 
