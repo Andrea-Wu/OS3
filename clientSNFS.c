@@ -517,25 +517,11 @@ int do_opendir(const char * path, struct fuse_file_info * ffi){
     //possibly recieve errno from server
 	printf("opendir: waiting to receive result\n");
     int result=0;
-    if(recv(sockDescriptor,&result,sizeof(int),0)){
+    if(recv(sockDescriptor,&result,sizeof(int),0)==-1){
         perror("ERROR: opendir request could not receive result");
     }else{
         printf("opendir: Received result: %d\n", result);
     }
-     
-
-
-/* 
-    //recieve a "DIR" structure from server
-    DIR* resultDirp
-    if((resultMessage=recv(sockDescriptor,&resultDirp,sizeof(DIR),0))==-1){
-        perror("ERROR: Netopenddir request could not receive directory stream");
-    }else{
-        printf("Netopenddir: Received directory stream ");
-    }
-
-    //I should check if stream is recieved correctly
-  */
 
     close(sockDescriptor);
     return -1 * result;

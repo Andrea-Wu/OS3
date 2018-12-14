@@ -9,7 +9,12 @@ int main(){
 
     opendir("/tmp/fuse/fake_dir");
     perror("opendir err =>");   
-   
+  
+
+
+    readdir(opendir("/tmp/fuse/asss"));
+
+    perror("some err =>");
     /*
 
     readdir(opendir("/tmp/fuse"));

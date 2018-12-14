@@ -16,14 +16,19 @@ void insertIntoList(dirNode* head,char* filename, DIR* stream){
 }
 
 DIR* searchList(dirNode* head, char* filename){
+    printf("search1\n");
     dirNode* temp = head -> next;
-
+    printf("search2\n");
     while(temp != NULL){
+        printf("search3\n");
         if(!strcmp(temp->filename, filename)){
+            printf("search4\n");
             return temp->stream ;
         }
+        printf("search5\n");
         temp = temp-> next;
     }
+    printf("search6\n");
     return NULL;
 }
 

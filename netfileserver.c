@@ -544,13 +544,13 @@ clientPacketData* handleReaddirRequest(clientPacketData* packet, char buffer[MAX
     int msgReciever = 0;
     int offsetReciever = 0;
     if((msgReciever =recv(packet->clientFileDescriptor,buffer,MAXBUFFERSIZE,0))==-1){
-        	perror("ERROR: Netread request could not receive the directory name");
+        	perror("ERROR: Netreaddir request could not receive the directory name");
     }else{
-        printf("readdir recieved directory name\n");
+        printf("readdir recieved directory name %s\n", buffer);
     }
 
-    if((offsetReciever=recv(packet->clientFileDescriptor, &offsetReciever,sizeof(offsetReciever),0))==-1){
-        	perror("ERROR: Netread request could not receive the offset");
+    if((offsetReciever=recv(packet->clientFileDescriptor, &offsetReciever,sizeof(int),0))==-1){
+        	perror("ERROR: Netreaddir request could not receive the offset");
     }else{
         printf("readdir recieved offset");
     }
@@ -558,7 +558,11 @@ clientPacketData* handleReaddirRequest(clientPacketData* packet, char buffer[MAX
     //get the proper directory name and run readdir
     char* newPath = getFilename(buffer);
 
-    DIR* dirp = opendir(newPath);
+    DIR* dirp = searchList(head, newPath);
+    if(dirp == NULL){
+        printf("dirp is null\n");
+    }
+
     struct dirent* readDirRes;
     memset(buffer, '\0', MAXBUFFERSIZE);
     readDirRes = readdir(dirp);
@@ -851,7 +855,7 @@ void *clientRequestCalls(void *clientInfoRequest)
 int main(int argc, char * argv[]){
 
     //initialize the directory linked list
-    dirNode* head = (dirNode*)malloc(sizeof(dirNode));
+    head = (dirNode*)malloc(sizeof(dirNode));
     head->next = NULL;
 
 	int socketFileDescriptor;
